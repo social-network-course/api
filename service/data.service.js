@@ -1,4 +1,3 @@
-import moment from "moment";
 import fetch from "node-fetch";
 
 const defaultHeaders = {
@@ -12,7 +11,7 @@ const appendApiKey = (url) => {
     return `${url}?api_key=${API_KEY}`;
 };
 
-export const fetchMoviesData = async () => {
+export const fetchRecommendedMoviesData = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
     try {
@@ -26,12 +25,20 @@ export const fetchMoviesData = async () => {
     } catch (err) {
         console.error(err);
     }
-}
+};
 
-export const storeData = async params => {
-    const user = await User.findOneAndUpdate({ id: params.id }, () => {
+export const fetchTopRatedMoviesData = async () => {
+    const movieDbUrl = process.env.MOVIEDB_URL;
 
-    });
+    try {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/top_rated`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
 
-    await user.save();
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
 }
