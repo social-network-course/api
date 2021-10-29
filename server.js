@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
 import userRouter from './controller/user.controller.js';
-import dataRouter from "./controller/data.controller.js";
-import * as DataService from './service/data.service.js';
+import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
+import { fetchRecommendedMoviesData, fetchTopRatedMoviesData } from "./service/data.service.js";
 
 dotenv.config();
 
@@ -20,8 +20,12 @@ app.options(cors())
 
 // api routes
 app.use('/users', userRouter);
+app.use('/movies', movieRouter);
 
 await connectToDb();
+
+await fetchRecommendedMoviesData();
+await fetchTopRatedMoviesData();
 
 // server
 const PORT = process.env.HTTP_PORT;

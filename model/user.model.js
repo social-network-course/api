@@ -24,10 +24,10 @@ const userSchema = new Schema({
         movies: Object,
         weather: Object
     },
-    date: {
+    timestamp: {
         type: Date,
         required: true,
     }
-}, { collection: 'dm_lab1_collection' });
+}, { collection: 'users' });
 
 export default mongoose.model('User', userSchema);
