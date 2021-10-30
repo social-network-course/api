@@ -9,68 +9,45 @@ const recommendedMovieSchema = new Schema({
         unique: true,
     },
     adult: {
-
+        type: Boolean
     },
     backdrop_path: {
-
+        type: String,
+        default: null
     },
-    belongs_to_collection: {
-
-    },
-    budget: {
-
-    },
-    homepage: {
-
-    },
-    imdb_id: {
-
+    genre_ids: {
+        type: Array
     },
     original_language: {
-
+        type: String
     },
     original_title: {
-
+        type: String
     },
     overview: {
-
+        type: String
     },
     popularity: {
-
+        type: Number
     },
     poster_path: {
-
+        type: String,
+        default: null
     },
     release_date: {
-
-    },
-    revenue: {
-
-    },
-    runtime: {
-
-    },
-    status: {
-
-    },
-    tagline: {
-
+        type: String
     },
     title: {
-
+        type: String
     },
     video: {
-
+        type: Boolean
     },
     vote_average: {
-
+        type: Number
     },
     vote_count: {
-
-    },
-    timestamp: {
-        type: Date,
-        required: true,
+        type: Number
     }
 }, { collection: 'recommended-movies' });
 

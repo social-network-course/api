@@ -15,7 +15,9 @@ export const fetchRecommendedMoviesData = async () => {
             }
         );
 
-        response.json().then(data => {
+        response.json().then(async (data) => {
+            await RecommendedMovie.deleteMany({});
+
             data.results.map(async (movie) => {
                 const recommendedMovie = new RecommendedMovie({
                     ...movie,
@@ -40,7 +42,9 @@ export const fetchTopRatedMoviesData = async () => {
             }
         );
 
-        response.json().then(data => {
+        response.json().then(async (data) => {
+            await TopRated.deleteMany({});
+
             data.results.map(async (movie) => {
                 const topRated = new TopRated({
                     ...movie,

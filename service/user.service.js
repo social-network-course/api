@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import User from '../model/user.model.js';
-import { errorConstants } from "../util/error.js";
 
 export const storeUser = async params => {
     const existingUserCheck = await User.findOne({ id: params.id });

@@ -28,7 +28,7 @@ const fetchMovieDetails = async (id) => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
     try {
-        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`), {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
                 method: 'GET',
                 headers: defaultHeaders
             }

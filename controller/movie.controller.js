@@ -59,8 +59,8 @@ const getMovieDetails = (req, res, next) => {
 };
 
 // routes
-movieRouter.get('/recommended-movies', getRecommendedMovies);
-movieRouter.get('/top-rated-movies', getTopRatedMovies);
+movieRouter.get('/recommended', getRecommendedMovies);
+movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/details/:id', getMovieDetails);
 
 export default movieRouter;
