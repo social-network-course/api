@@ -20,9 +20,8 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    data: {
-        movies: Object,
-        weather: Object
+    likes: {
+        type: Array
     },
     timestamp: {
         type: Date,

@@ -25,7 +25,64 @@ const storeUser = (req, res, next) => {
         });
 };
 
+const storeUserLike = (req, res, next) => {
+    UserService.storeUserLike(req.params, req.body)
+        .then((id) => {
+            res
+                .status(200)
+                .send(id.toString())
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while storing user like.',
+                    hasErrors: true
+                })
+        });
+};
+
+const storeUserUnlike = (req, res, next) => {
+    UserService.storeUserUnlike(req.params, req.body)
+        .then((id) => {
+            res
+                .status(200)
+                .send(id.toString())
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while storing user like.',
+                    hasErrors: true
+                })
+        });
+};
+
+const getUserLikedMovies = (req, res, next) => {
+    UserService.getUserLikes(req.params)
+        .then((likedMovies) => {
+            res
+                .status(200)
+                .send(likedMovies)
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching liked movies.',
+                    hasErrors: true
+                })
+        });
+};
+
 // routes
 userRouter.post('/create', storeUser);
+userRouter.post('/:userId/movies/like', storeUserLike);
+userRouter.post('/:userId/movies/unlike', storeUserUnlike);
+userRouter.get('/:userId/movies/likes', getUserLikedMovies);
 
 export default userRouter;
