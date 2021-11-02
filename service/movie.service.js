@@ -1,8 +1,8 @@
-import fetch from "node-fetch";
-
 import RecommendedMovie from "../model/recommendedMovie.model.js";
 import TopRatedMovie from "../model/topRatedMovie.model.js";
-import { appendApiKey, defaultHeaders } from "../util/communication.js";
+
+import { fetchMovieCast, fetchMovieDetails } from "../client/movie.client.js";
+import { NUMBER_OF_PAGES } from "../util/communication.js";
 
 export const getMovieDetails = async (params) => {
     const movieDetails = await fetchMovieDetails(params.id);
@@ -12,46 +12,20 @@ export const getMovieDetails = async (params) => {
     return fullDetails;
 };
 
-export const getRecommendedMovies = async () => {
-    const recommendedMovies = await RecommendedMovie.find({});
+export const getRecommendedMovies = async ({ page, limit }) => {
+    const recommendedMovies = await RecommendedMovie
+        .find({})
+        .limit(Number(limit))
+        .skip(NUMBER_OF_PAGES * (Number(page) - 1));
 
     return recommendedMovies;
 };
 
-export const getTopRatedMovies = async (params) => {
-    const topRatedMovies = await TopRatedMovie.find({});
+export const getTopRatedMovies = async () => {
+    const topRatedMovies = await TopRatedMovie
+        .find({})
+        .limit(22)
+        .skip(NUMBER_OF_PAGES * 1);
 
     return topRatedMovies;
-};
-
-const fetchMovieDetails = async (id) => {
-    const movieDbUrl = process.env.MOVIEDB_URL;
-
-    try {
-        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
-                method: 'GET',
-                headers: defaultHeaders
-            }
-        );
-
-        return response.json();
-    } catch (err) {
-        console.error(err);
-    }
-};
-
-const fetchMovieCast = async (id) => {
-    const movieDbUrl = process.env.MOVIEDB_URL;
-
-    try {
-        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}/credits`), {
-                method: 'GET',
-                headers: defaultHeaders
-            }
-        );
-
-        return response.json();
-    } catch (err) {
-        console.error(err);
-    }
 };

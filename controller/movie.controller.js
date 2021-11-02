@@ -5,7 +5,7 @@ import * as MovieService from '../service/movie.service.js';
 const movieRouter = express.Router();
 
 const getRecommendedMovies = (req, res, next) => {
-    MovieService.getRecommendedMovies()
+    MovieService.getRecommendedMovies(req.query)
         .then((recommendedMovies) => {
             res
                 .status(200)

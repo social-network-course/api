@@ -35,7 +35,7 @@ export const storeUserLike = async ({ userId }, { movieId }) => {
                     resolve(movieId);
                 }
             });
-        })
+        });
     }
 };
 

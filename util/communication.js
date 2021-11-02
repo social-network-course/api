@@ -8,3 +8,5 @@ export const defaultHeaders = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
 };
+
+export const NUMBER_OF_PAGES = 11;
