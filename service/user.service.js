@@ -7,7 +7,7 @@ export const storeUser = async params => {
     const user = await User.findOne({ id: params.id });
 
     if (user) {
-        return errorConstants.ALREADY_EXISTING_USER;
+        throw errorConstants.ALREADY_EXISTING_USER;
     } else {
         const user = new User({
             id: params.id,
@@ -18,6 +18,21 @@ export const storeUser = async params => {
         });
 
         await user.save();
+    }
+};
+
+export const getUserData = async params => {
+    const user = await User.findOne({ id: params.id });
+
+    if (!user) {
+        throw errorConstants.MISSING_USER;
+    } else {
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            pictureUrl: user.url
+        };
     }
 };
 

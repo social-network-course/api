@@ -14,9 +14,9 @@ export const getMovieDetails = async (params) => {
 
 export const getRecommendedMovies = async ({ page, limit }) => {
     const recommendedMovies = await RecommendedMovie
-        .find({})
-        .limit(Number(limit))
-        .skip(NUMBER_OF_PAGES * (Number(page) - 1));
+        .find()
+        .skip(limit * (Number(page) - 1))
+        .limit(Number(limit));
 
     return recommendedMovies;
 };

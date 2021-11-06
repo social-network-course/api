@@ -14,12 +14,13 @@ dotenv.config();
 const app = express();
 
 // middleware
-app.use(cors());
+app.use(cors({ credentials: true, origin: process.env.WEBUI_URL, preflight: true } ));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // check fb token expiration
 app.use(checkFbTokenExpiration)
+
 // api routes
 app.use('/users', userRouter);
 app.use('/movies', movieRouter);

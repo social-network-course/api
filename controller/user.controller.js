@@ -25,6 +25,24 @@ const storeUser = (req, res, next) => {
         });
 };
 
+const getUserData = (req, res, next) => {
+    UserService.getUserData(req.query)
+        .then((data) => {
+            res
+                .status(201)
+                .send(data)
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching user data.',
+                    hasErrors: true
+                })
+        });
+};
+
 const storeUserLike = (req, res, next) => {
     UserService.storeUserLike(req.params, req.body)
         .then((id) => {
@@ -81,6 +99,7 @@ const getUserLikedMovies = (req, res, next) => {
 
 // routes
 userRouter.post('/create', storeUser);
+userRouter.post('/data/:userId', getUserData);
 userRouter.post('/:userId/movies/like', storeUserLike);
 userRouter.post('/:userId/movies/unlike', storeUserUnlike);
 userRouter.get('/:userId/movies/likes', getUserLikedMovies);
