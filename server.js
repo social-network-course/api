@@ -7,17 +7,19 @@ import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
 import { fetchRecommendedMoviesData, fetchTopRatedMoviesData } from "./client/movie.client.js";
+import { checkFbTokenExpiration } from "./util/communication.js";
 
 dotenv.config();
 
 const app = express();
 
 // middleware
-app.use(cors({ credentials: true, origin: process.env.WEBUI_URL, enablePreflight: true }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.options(cors())
 
+// check fb token expiration
+app.use(checkFbTokenExpiration)
 // api routes
 app.use('/users', userRouter);
 app.use('/movies', movieRouter);
