@@ -2,7 +2,6 @@ import RecommendedMovie from "../model/recommendedMovie.model.js";
 import TopRatedMovie from "../model/topRatedMovie.model.js";
 
 import { fetchMovieCast, fetchMovieDetails } from "../client/movie.client.js";
-import { NUMBER_OF_PAGES } from "../util/communication.js";
 
 export const getMovieDetails = async (params) => {
     const movieDetails = await fetchMovieDetails(params.id);
@@ -21,11 +20,11 @@ export const getRecommendedMovies = async ({ page, limit }) => {
     return recommendedMovies;
 };
 
-export const getTopRatedMovies = async () => {
+export const getTopRatedMovies = async ({ page, limit }) => {
     const topRatedMovies = await TopRatedMovie
-        .find({})
-        .limit(22)
-        .skip(NUMBER_OF_PAGES * 1);
+        .find()
+        .skip(limit * (Number(page) - 1))
+        .limit(Number(limit));
 
     return topRatedMovies;
 };

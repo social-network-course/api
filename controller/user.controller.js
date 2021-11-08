@@ -29,7 +29,7 @@ const getUserData = (req, res, next) => {
     UserService.getUserData(req.query)
         .then((data) => {
             res
-                .status(201)
+                .status(200)
                 .send(data)
         })
         .catch(err => {

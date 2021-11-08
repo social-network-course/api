@@ -23,7 +23,7 @@ const getRecommendedMovies = (req, res, next) => {
 };
 
 const getTopRatedMovies = (req, res, next) => {
-    MovieService.getTopRatedMovies()
+    MovieService.getTopRatedMovies(req.query)
         .then((topRatedMovies) => {
             res
                 .status(200)
