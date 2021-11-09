@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
-import { fetchRecommendedMoviesData, fetchTopRatedMoviesData } from "./client/movie.client.js";
+import {fetchPopularMoviesData, fetchRecommendedMoviesData, fetchTopRatedMoviesData} from "./client/movie.client.js";
 import { checkFbTokenExpiration } from "./util/communication.js";
 
 dotenv.config();
@@ -28,7 +28,8 @@ app.use('/movies', movieRouter);
 await connectToDb();
 
 /*await fetchRecommendedMoviesData();
-await fetchTopRatedMoviesData();*/
+await fetchTopRatedMoviesData();
+await fetchPopularMoviesData();*/
 
 // server
 const PORT = process.env.HTTP_PORT;

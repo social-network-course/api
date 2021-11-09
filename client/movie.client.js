@@ -1,8 +1,9 @@
 import fetch from "node-fetch";
 import moment from "moment";
 
-import TopRated from '../model/topRatedMovie.model.js';
+import TopRatedMovie from '../model/topRatedMovie.model.js';
 import RecommendedMovie from '../model/recommendedMovie.model.js';
+import PopularMovie from '../model/popularMovie.model.js';
 import { appendApiKey, defaultHeaders, NUMBER_OF_PAGES } from "../util/communication.js";
 
 export const fetchRecommendedMoviesData = async () => {
@@ -36,7 +37,7 @@ export const fetchRecommendedMoviesData = async () => {
 export const fetchTopRatedMoviesData = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
-    await TopRated.deleteMany({});
+    await TopRatedMovie.deleteMany({});
 
     for (let i = 1; i <= NUMBER_OF_PAGES; i++) {
         try {
@@ -48,12 +49,41 @@ export const fetchTopRatedMoviesData = async () => {
 
             response.json().then(async (data) => {
                 data.results.map(async (movie) => {
-                    const topRated = new TopRated({
+                    const topRatedMovie = new TopRatedMovie({
                         ...movie,
                         timestamp: moment().add(2, 'hours').format()
                     });
 
-                    await topRated.save();
+                    await topRatedMovie.save();
+                });
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+};
+
+export const fetchPopularMoviesData = async () => {
+    const movieDbUrl = process.env.MOVIEDB_URL;
+
+    await PopularMovie.deleteMany({});
+
+    for (let i = 1; i <= NUMBER_OF_PAGES; i++) {
+        try {
+            const response = await fetch(appendApiKey(`${movieDbUrl}/movie/popular`).concat(`&page=${i}`), {
+                    method: 'GET',
+                    headers: defaultHeaders
+                }
+            );
+
+            response.json().then(async (data) => {
+                data.results.map(async (movie) => {
+                    const popularMovie = new PopularMovie({
+                        ...movie,
+                        timestamp: moment().add(2, 'hours').format()
+                    });
+
+                    await popularMovie.save();
                 });
             });
         } catch (err) {

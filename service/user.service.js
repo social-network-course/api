@@ -3,17 +3,17 @@ import moment from 'moment';
 import User from '../model/user.model.js';
 import { errorConstants } from "../util/error.js";
 
-export const storeUser = async params => {
-    const user = await User.findOne({ id: params.id });
+export const storeUser = async ({ id, name, email, url }) => {
+    const user = await User.findOne({ id: id });
 
     if (user) {
         throw errorConstants.ALREADY_EXISTING_USER;
     } else {
         const user = new User({
-            id: params.id,
-            name: params.name,
-            email: params.email,
-            pictureUrl: params.url,
+            id: id,
+            name: name,
+            email: email,
+            pictureUrl: url,
             timestamp: moment().add(2, 'hours').format()
         });
 
@@ -21,8 +21,8 @@ export const storeUser = async params => {
     }
 };
 
-export const getUserData = async params => {
-    const user = await User.findOne({ id: params.id });
+export const getUserData = async ({ name, id } ) => {
+    const user = await User.findOne({ id: id });
 
     if (!user) {
         throw errorConstants.MISSING_USER;
@@ -31,7 +31,7 @@ export const getUserData = async params => {
             id: user.id,
             name: user.name,
             email: user.email,
-            pictureUrl: user.url
+            pictureUrl: user.pictureUrl
         };
     }
 };

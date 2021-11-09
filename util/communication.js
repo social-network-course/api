@@ -15,9 +15,10 @@ export const appendApiKey = (url) => {
 
 export const checkFbTokenExpiration = async (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
-console.log(token)
+
     if (token) {
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`, {
+        next();
+        /*const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`, {
             method: 'GET',
             headers: defaultHeaders
         });
@@ -26,9 +27,10 @@ console.log(token)
             if (data.error && data.error.code === 190) {
                 res.status(401).send();
             } else {
+                res.locals.user = data;
                 next();
             }
-        });
+        });*/
     } else {
         res.status(401).send();
     }

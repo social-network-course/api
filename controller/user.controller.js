@@ -26,7 +26,7 @@ const storeUser = (req, res, next) => {
 };
 
 const getUserData = (req, res, next) => {
-    UserService.getUserData(req.query)
+    UserService.getUserData(res.locals.user)
         .then((data) => {
             res
                 .status(200)
@@ -99,7 +99,7 @@ const getUserLikedMovies = (req, res, next) => {
 
 // routes
 userRouter.post('/create', storeUser);
-userRouter.post('/data/:userId', getUserData);
+userRouter.get('/current', getUserData);
 userRouter.post('/:userId/movies/like', storeUserLike);
 userRouter.post('/:userId/movies/unlike', storeUserUnlike);
 userRouter.get('/:userId/movies/likes', getUserLikedMovies);

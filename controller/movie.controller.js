@@ -40,6 +40,43 @@ const getTopRatedMovies = (req, res, next) => {
         });
 };
 
+const getPopularMovies = (req, res, next) => {
+    MovieService.getPopularMovies(req.query)
+        .then((popularMovies) => {
+            res
+                .status(200)
+                .send(popularMovies)
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching popular movies.',
+                    hasErrors: true
+                })
+        });
+};
+
+
+const getFeaturedMovies = (req, res, next) => {
+    MovieService.getFeaturedMovies(req.query)
+        .then((featuredMovies) => {
+            res
+                .status(200)
+                .send(featuredMovies)
+        })
+        .catch(err => {
+            console.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching featured movies.',
+                    hasErrors: true
+                })
+        });
+};
+
 const getMovieDetails = (req, res, next) => {
     MovieService.getMovieDetails(req.params)
         .then((movieDetails) => {
@@ -61,6 +98,8 @@ const getMovieDetails = (req, res, next) => {
 // routes
 movieRouter.get('/recommended', getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
+movieRouter.get('/popular', getPopularMovies);
+movieRouter.get('/featured', getFeaturedMovies);
 movieRouter.get('/details/:id', getMovieDetails);
 
 export default movieRouter;
