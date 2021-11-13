@@ -49,4 +49,6 @@ export const movieSchema = new Schema({
     vote_count: {
         type: Number
     }
-});
+}, { collection: 'movies' });
+
+export default mongoose.model('Movie', movieSchema);

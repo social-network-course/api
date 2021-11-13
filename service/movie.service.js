@@ -1,18 +1,18 @@
-import RecommendedMovie from "../model/recommendedMovie.model.js";
-import TopRatedMovie from "../model/topRatedMovie.model.js";
-import PopularMovie from "../model/popularMovie.model.js";
+import moment from "moment";
+
+import Movie from "../model/movie.model.js";
 import { fetchMovieCast, fetchMovieDetails } from "../client/movie.client.js";
 
-export const getMovieDetails = async (params) => {
-    const movieDetails = await fetchMovieDetails(params.id);
-    const movieCast = await fetchMovieCast(params.id);
+export const getMovieDetails = async ({ id }) => {
+    const movieDetails = await fetchMovieDetails(id);
+    const movieCast = await fetchMovieCast(id);
     const fullDetails = Object.assign({}, movieDetails, movieCast);
 
     return fullDetails;
 };
 
 export const getRecommendedMovies = async ({ page, limit }) => {
-    const recommendedMovies = await RecommendedMovie
+    const recommendedMovies = await Movie
         .find()
         .skip(limit * (Number(page) - 1))
         .limit(Number(limit));
@@ -21,8 +21,9 @@ export const getRecommendedMovies = async ({ page, limit }) => {
 };
 
 export const getTopRatedMovies = async ({ page, limit }) => {
-    const topRatedMovies = await TopRatedMovie
+    const topRatedMovies = await Movie
         .find()
+        .sort({ vote_average: 'desc' })
         .skip(limit * (Number(page) - 1))
         .limit(Number(limit));
 
@@ -30,8 +31,9 @@ export const getTopRatedMovies = async ({ page, limit }) => {
 };
 
 export const getPopularMovies = async ({ page, limit }) => {
-    const popularMovies = await PopularMovie
+    const popularMovies = await Movie
         .find()
+        .sort({ popularity: 'desc' })
         .skip(limit * (Number(page) - 1))
         .limit(Number(limit));
 
@@ -40,10 +42,28 @@ export const getPopularMovies = async ({ page, limit }) => {
 
 
 export const getFeaturedMovies = async ({ limit }) => {
-    const featuredMovies = await PopularMovie
+    const featuredMovies = await Movie
         .find()
         .sort({ popularity: 'desc' })
         .limit(Number(limit));
 
     return featuredMovies;
+};
+
+export const getMoviesInTheaters = async ({ limit }) => {
+    const today = new Date();
+    const interval = 14;
+    const todayMinusInterval = new Date(new Date(today).setDate(today.getDate() - interval));
+
+    const moviesInTheaters = await Movie
+        .find({
+            release_date: {
+                $gte: moment(todayMinusInterval).format('YYYY-MM-DD'),
+                $lt: moment(today).format('YYYY-MM-DD')
+            }
+        })
+        .sort({ popularity: 'desc' })
+        .limit(Number(limit));
+
+    return moviesInTheaters;
 };
