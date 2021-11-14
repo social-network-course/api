@@ -16,7 +16,10 @@ const storeUser = (req, res, next) => {
                 })
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -34,7 +37,10 @@ const getUserData = (req, res, next) => {
                 .send(data)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -52,7 +58,10 @@ const storeUserLike = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -70,7 +79,10 @@ const storeUserUnlike = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -88,7 +100,10 @@ const addToUserWatchlist = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -106,7 +121,10 @@ const removeFromUserWatchlist = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({

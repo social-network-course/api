@@ -13,7 +13,10 @@ const getRecommendedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -31,7 +34,10 @@ const getTopRatedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -49,7 +55,10 @@ const getPopularMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -67,7 +76,10 @@ const getFeaturedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -85,7 +97,10 @@ const getMoviesInTheaters = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -103,7 +118,10 @@ const getRegionMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({
@@ -121,7 +139,10 @@ const getMovieDetails = (req, res, next) => {
                 .send(movieDetails)
         })
         .catch(err => {
-            logger.log(err);
+            logger.log({
+                level: 'error',
+                message: err
+            });
             res
                 .status(500)
                 .send({

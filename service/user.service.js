@@ -5,7 +5,7 @@ import { errorConstants } from "../util/error.js";
 
 export const storeUser = async ({ id, name, email, url, location }) => {
     const user = await User.findOne({ id: id });
-console.log(location)
+
     if (user) {
         throw errorConstants.ALREADY_EXISTING_USER;
     } else {
