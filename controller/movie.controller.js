@@ -97,10 +97,10 @@ const getMoviesInTheaters = (req, res, next) => {
 
 const getRegionMovies = (req, res, next) => {
     fetchRegionMovies(req.query)
-        .then((movieDetails) => {
+        .then((movies) => {
             res
                 .status(200)
-                .send(movieDetails)
+                .send(movies)
         })
         .catch(err => {
             console.log(err);
