@@ -1,6 +1,7 @@
 import express from 'express';
 
 import * as UserService from '../service/user.service.js';
+import { logger } from "../util/logging.js";
 
 const userRouter = express.Router();
 
@@ -15,7 +16,7 @@ const storeUser = (req, res, next) => {
                 })
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -33,7 +34,7 @@ const getUserData = (req, res, next) => {
                 .send(data)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -51,7 +52,7 @@ const storeUserLike = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -69,7 +70,7 @@ const storeUserUnlike = (req, res, next) => {
                 .send(id.toString())
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -79,19 +80,37 @@ const storeUserUnlike = (req, res, next) => {
         });
 };
 
-const getUserLikedMovies = (req, res, next) => {
-    UserService.getUserLikes(req.params)
-        .then((likedMovies) => {
+const addToUserWatchlist = (req, res, next) => {
+    UserService.addToUserWatchlist(req.params, req.body)
+        .then((id) => {
             res
                 .status(200)
-                .send(likedMovies)
+                .send(id.toString())
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
-                    message: 'Error while fetching liked movies.',
+                    message: 'Error while storing user like.',
+                    hasErrors: true
+                })
+        });
+};
+
+const removeFromUserWatchlist = (req, res, next) => {
+    UserService.removeFromUserWatchlist(req.params, req.body)
+        .then((id) => {
+            res
+                .status(200)
+                .send(id.toString())
+        })
+        .catch(err => {
+            logger.log(err);
+            res
+                .status(500)
+                .send({
+                    message: 'Error while storing user like.',
                     hasErrors: true
                 })
         });
@@ -100,8 +119,9 @@ const getUserLikedMovies = (req, res, next) => {
 // routes
 userRouter.post('/create', storeUser);
 userRouter.get('/current', getUserData);
-userRouter.post('/:userId/movies/like', storeUserLike);
-userRouter.post('/:userId/movies/unlike', storeUserUnlike);
-userRouter.get('/:userId/movies/likes', getUserLikedMovies);
+userRouter.post('/:userId/movies/likes/add', storeUserLike);
+userRouter.post('/:userId/movies/likes/remove', storeUserUnlike);
+userRouter.post('/:userId/movies/watchlist/add', addToUserWatchlist);
+userRouter.post('/:userId/movies/watchlist/remove', removeFromUserWatchlist);
 
 export default userRouter;

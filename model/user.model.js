@@ -20,7 +20,13 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    location: {
+        type: Object
+    },
     likes: {
+        type: Array
+    },
+    watchlist: {
         type: Array
     },
     timestamp: {

@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import Movie from "../model/movie.model.js";
-import { fetchMovieCast, fetchMovieDetails } from "../client/movie.client.js";
+import { fetchMovieCast, fetchMovieDetails, fetchRegionMovies } from "../client/movie.client.js";
 
 export const getMovieDetails = async ({ id }) => {
     const movieDetails = await fetchMovieDetails(id);
@@ -66,4 +66,10 @@ export const getMoviesInTheaters = async ({ limit }) => {
         .limit(Number(limit));
 
     return moviesInTheaters;
+};
+
+export const getRegionMovies = async ({ region, limit }) => {
+    const regionMovies = await fetchRegionMovies(region, limit);
+
+    return regionMovies;
 };

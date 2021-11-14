@@ -3,9 +3,9 @@ import moment from 'moment';
 import User from '../model/user.model.js';
 import { errorConstants } from "../util/error.js";
 
-export const storeUser = async ({ id, name, email, url }) => {
+export const storeUser = async ({ id, name, email, url, location }) => {
     const user = await User.findOne({ id: id });
-
+console.log(location)
     if (user) {
         throw errorConstants.ALREADY_EXISTING_USER;
     } else {
@@ -14,7 +14,10 @@ export const storeUser = async ({ id, name, email, url }) => {
             name: name,
             email: email,
             pictureUrl: url,
-            timestamp: moment().add(2, 'hours').format()
+            likes: [],
+            watchlist: [],
+            location: location,
+            timestamp: moment().format()
         });
 
         await user.save();
@@ -31,7 +34,10 @@ export const getUserData = async ({ name, id } ) => {
             id: user.id,
             name: user.name,
             email: user.email,
-            pictureUrl: user.pictureUrl
+            pictureUrl: user.pictureUrl,
+            likes: user.likes,
+            watchlist: user.watchlist,
+            location: user.location
         };
     }
 };
@@ -70,14 +76,40 @@ export const storeUserUnlike = async ({ userId }, { movieId }) => {
             });
         });
     }
+}
+
+export const addToUserWatchlist = async ({ userId }, { movieId }) => {
+    if (!userId) {
+        throw errorConstants.MISSING_USER_ID;
+    } else if (!movieId) {
+        throw errorConstants.MISSING_MOVIE_ID;
+    } else {
+        return new Promise((resolve, reject) => {
+            User.findOneAndUpdate({ id: userId }, { '$addToSet': { 'watchlist': movieId } }, (error, success) => {
+                if (error) {
+                    throw errorConstants.STORING_DATA_FAILED;
+                } else {
+                    resolve(movieId);
+                }
+            });
+        });
+    }
 };
 
-export const getUserLikes = async ({ userId }) => {
-    const user = await User.findOne({ id: userId });
-
-    if (!user) {
-        throw errorConstants.MISSING_USER;
+export const removeFromUserWatchlist = async ({ userId }, { movieId }) => {
+    if (!userId) {
+        throw errorConstants.MISSING_USER_ID;
+    } else if (!movieId) {
+        throw errorConstants.MISSING_MOVIE_ID;
     } else {
-        return user.likes;
+        return new Promise((resolve, reject) => {
+            User.findOneAndUpdate({ id: userId }, { '$pull': { 'watchlist': movieId } }, (error, success) => {
+                if (error) {
+                    throw errorConstants.STORING_DATA_FAILED;
+                } else {
+                    return resolve(movieId);
+                }
+            });
+        });
     }
 };

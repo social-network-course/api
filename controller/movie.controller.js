@@ -1,7 +1,7 @@
 import express from 'express';
 
 import * as MovieService from '../service/movie.service.js';
-import { fetchRegionMovies } from "../client/movie.client.js";
+import { logger } from "../util/logging.js";
 
 const movieRouter = express.Router();
 
@@ -13,7 +13,7 @@ const getRecommendedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -31,7 +31,7 @@ const getTopRatedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -49,7 +49,7 @@ const getPopularMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -67,7 +67,7 @@ const getFeaturedMovies = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -85,7 +85,7 @@ const getMoviesInTheaters = (req, res, next) => {
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -96,14 +96,14 @@ const getMoviesInTheaters = (req, res, next) => {
 };
 
 const getRegionMovies = (req, res, next) => {
-    fetchRegionMovies(req.query)
+    MovieService.getRegionMovies(req.query)
         .then((movies) => {
             res
                 .status(200)
                 .send(movies)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({
@@ -121,7 +121,7 @@ const getMovieDetails = (req, res, next) => {
                 .send(movieDetails)
         })
         .catch(err => {
-            console.log(err);
+            logger.log(err);
             res
                 .status(500)
                 .send({

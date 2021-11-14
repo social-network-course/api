@@ -65,14 +65,18 @@ export const fetchMovieCast = async (id) => {
     }
 };
 
-export const fetchRegionMovies = async ({ region, limit }) => {
+export const fetchRegionMovies = async (region, limit) => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
-    const response = await fetch(appendApiKey(`${movieDbUrl}/movie/popular`).concat(`&region=${region.toUpperCase()}`), {
-            method: 'GET',
-            headers: defaultHeaders
-        }
-    );
+    try {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/popular`).concat(`&region=${region.toUpperCase()}`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
 
-    return response.json();
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
 };
