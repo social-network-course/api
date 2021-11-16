@@ -2,6 +2,7 @@ import express from 'express';
 
 import * as MovieService from '../service/movie.service.js';
 import { logger } from "../util/logging.js";
+import { checkFbTokenExpiration } from "../util/communication.js";
 
 const movieRouter = express.Router();
 
@@ -153,8 +154,8 @@ const getMovieDetails = (req, res, next) => {
 };
 
 // routes
-movieRouter.get('/', getRegionMovies);
-movieRouter.get('/recommended', getRecommendedMovies);
+movieRouter.get('/',checkFbTokenExpiration, getRegionMovies);
+movieRouter.get('/recommended', checkFbTokenExpiration, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);
 movieRouter.get('/featured', getFeaturedMovies);
