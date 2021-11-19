@@ -1,7 +1,12 @@
 import moment from "moment";
 
 import Movie from "../model/movie.model.js";
-import { fetchMovieCast, fetchMovieDetails, fetchRegionMovies } from "../client/movie.client.js";
+import {
+    fetchLatestMovie,
+    fetchMovieCast,
+    fetchMovieDetails,
+    fetchRegionMovies
+} from "../client/movie.client.js";
 
 export const getMovieDetails = async ({ id }) => {
     const movieDetails = await fetchMovieDetails(id);
@@ -72,4 +77,10 @@ export const getRegionMovies = async ({ region, limit }) => {
     const regionMovies = await fetchRegionMovies(region, limit);
 
     return regionMovies;
+};
+
+export const getLatestMovie = async () => {
+    const latestMovie = await fetchLatestMovie();
+
+    return latestMovie;
 };

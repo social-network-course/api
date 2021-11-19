@@ -132,6 +132,27 @@ const getRegionMovies = (req, res, next) => {
         });
 };
 
+const getLatestMovie = (req, res, next) => {
+    MovieService.getLatestMovie()
+        .then((movie) => {
+            res
+                .status(200)
+                .send(movie)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching latest movie.',
+                    hasErrors: true
+                })
+        });
+};
+
 const getMovieDetails = (req, res, next) => {
     MovieService.getMovieDetails(req.params)
         .then((movieDetails) => {
@@ -160,6 +181,7 @@ movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);
 movieRouter.get('/featured', getFeaturedMovies);
 movieRouter.get('/in-theaters', getMoviesInTheaters);
+movieRouter.get('/latest', getLatestMovie);
 movieRouter.get('/details/:id', getMovieDetails);
 
 export default movieRouter;

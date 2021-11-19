@@ -82,3 +82,19 @@ export const fetchRegionMovies = async (region, limit) => {
         console.error(err);
     }
 };
+
+export const fetchLatestMovie = async () => {
+    const movieDbUrl = process.env.MOVIEDB_URL;
+
+    try {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/latest`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
+};
