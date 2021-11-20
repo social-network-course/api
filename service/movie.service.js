@@ -73,10 +73,13 @@ export const getMoviesInTheaters = async ({ limit }) => {
     return moviesInTheaters;
 };
 
-export const getRegionMovies = async ({ region, limit }) => {
-    const regionMovies = await fetchRegionMovies(region, limit);
+export const getRegionMovies = async ({ region, limit }, ipLocation) => {
+    const regionMovies = await fetchRegionMovies(ipLocation.country);
 
-    return regionMovies;
+    return {
+        ...regionMovies,
+        country: ipLocation.country
+    };
 };
 
 export const getLatestMovie = async () => {

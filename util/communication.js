@@ -1,4 +1,7 @@
 import fetch from "node-fetch";
+import * as requestIp from 'request-ip';
+import pkg from 'geoip-lite';
+const { lookup } = pkg;
 
 import { logger } from "./logging.js";
 
@@ -13,7 +16,7 @@ export const appendApiKey = (url) => {
     return `${url}?api_key=${API_KEY}`;
 };
 
-export const checkFbTokenExpiration = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
 
     if (token) {
@@ -39,4 +42,13 @@ export const checkFbTokenExpiration = async (req, res, next) => {
     } else {
         return next();
     }
+};
+
+export const ipMiddleware = async (req, res, next) => {
+    const clientIp = requestIp.getClientIp(req);
+    // hardcoded for now because localhost can't get resolved
+    const location = lookup('2a05:4f46:40b:6500:e14a:81a5:73:d365');
+
+    res.locals.userLocation = location;
+    return next();
 };

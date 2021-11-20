@@ -1,12 +1,13 @@
 import express from 'express';
 
 import * as UserService from '../service/user.service.js';
+import { ipMiddleware } from "../util/communication.js";
 import { logger } from "../util/logging.js";
 
 const userRouter = express.Router();
 
 const storeUser = (req, res, next) => {
-    UserService.storeUser(req.body)
+    UserService.storeUser(req.body, res.locals.userLocation)
         .then(() => {
             res
                 .status(201)
@@ -135,7 +136,7 @@ const removeFromUserWatchlist = (req, res, next) => {
 };
 
 // routes
-userRouter.post('/create', storeUser);
+userRouter.post('/create', ipMiddleware, storeUser);
 userRouter.get('/current', getUserData);
 userRouter.post('/:userId/movies/likes/add', storeUserLike);
 userRouter.post('/:userId/movies/likes/remove', storeUserUnlike);

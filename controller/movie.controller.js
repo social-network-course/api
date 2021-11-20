@@ -2,7 +2,7 @@ import express from 'express';
 
 import * as MovieService from '../service/movie.service.js';
 import { logger } from "../util/logging.js";
-import { checkFbTokenExpiration } from "../util/communication.js";
+import { authMiddleware, ipMiddleware } from "../util/communication.js";
 
 const movieRouter = express.Router();
 
@@ -112,7 +112,7 @@ const getMoviesInTheaters = (req, res, next) => {
 };
 
 const getRegionMovies = (req, res, next) => {
-    MovieService.getRegionMovies(req.query)
+    MovieService.getRegionMovies(req.query, res.locals.userLocation)
         .then((movies) => {
             res
                 .status(200)
@@ -175,8 +175,8 @@ const getMovieDetails = (req, res, next) => {
 };
 
 // routes
-movieRouter.get('/',checkFbTokenExpiration, getRegionMovies);
-movieRouter.get('/recommended', checkFbTokenExpiration, getRecommendedMovies);
+movieRouter.get('/', ipMiddleware, getRegionMovies);
+movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);
 movieRouter.get('/featured', getFeaturedMovies);

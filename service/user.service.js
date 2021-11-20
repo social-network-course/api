@@ -3,7 +3,7 @@ import moment from 'moment';
 import User from '../model/user.model.js';
 import { errorConstants } from "../util/error.js";
 
-export const storeUser = async ({ id, name, email, url, location }) => {
+export const storeUser = async ({ id, name, email, url }, ipLocation) => {
     const user = await User.findOne({ id: id });
 
     if (user) {
@@ -16,7 +16,7 @@ export const storeUser = async ({ id, name, email, url, location }) => {
             pictureUrl: url,
             likes: [],
             watchlist: [],
-            location: location,
+            location: ipLocation,
             timestamp: moment().format()
         });
 

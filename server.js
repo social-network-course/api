@@ -7,7 +7,7 @@ import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
 import { fetchMovies } from "./client/movie.client.js";
-import { checkFbTokenExpiration } from "./util/communication.js";
+import { authMiddleware, ipMiddleware } from "./util/communication.js";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // api routes
-app.use('/users', checkFbTokenExpiration, userRouter);
+app.use('/users', authMiddleware, userRouter);
 app.use('/movies', movieRouter);
 
 await connectToDb();
