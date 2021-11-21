@@ -3,11 +3,6 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 export const movieSchema = new Schema({
-    id: {
-        type: Number,
-        required: true,
-        unique: true,
-    },
     adult: {
         type: Boolean
     },
@@ -15,8 +10,30 @@ export const movieSchema = new Schema({
         type: String,
         default: null
     },
-    genre_ids: {
+    belongs_to_collection: {
+        type: Object,
+        default: null
+    },
+    budget: {
+        type: Number,
+        default: null
+    },
+    cast: {
         type: Array
+    },
+    genres: {
+        type: Array
+    },
+    homepage: {
+        type: Array
+    },
+    id: {
+        type: Number,
+        required: true,
+        unique: true,
+    },
+    imdb_id: {
+        type: String
     },
     original_language: {
         type: String
@@ -34,7 +51,31 @@ export const movieSchema = new Schema({
         type: String,
         default: null
     },
+    production_companies: {
+        type: Array
+    },
+    production_countries: {
+        type: Array
+    },
     release_date: {
+        type: String
+    },
+    revenue: {
+        type: Number
+    },
+    runtime: {
+        type: Number
+    },
+    spoken_languages: {
+        type: Array
+    },
+    social_ratings: {
+        type: Array
+    },
+    status: {
+        type: String
+    },
+    tagline: {
         type: String
     },
     title: {
@@ -42,6 +83,9 @@ export const movieSchema = new Schema({
     },
     video: {
         type: Boolean
+    },
+    videos: {
+        type: Array
     },
     vote_average: {
         type: Number

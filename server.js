@@ -7,7 +7,7 @@ import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
 import { fetchMovies } from "./client/movie.client.js";
-import { authMiddleware, ipMiddleware } from "./util/communication.js";
+import { authMiddleware } from "./util/communication.js";
 
 dotenv.config();
 

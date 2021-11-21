@@ -4,7 +4,7 @@ import moment from "moment";
 import Movie from '../model/movie.model.js';
 import { appendApiKey, defaultHeaders } from "../util/communication.js";
 
-const NUMBER_OF_PAGES = 50;
+const NUMBER_OF_PAGES = 10;
 
 export const fetchMovies = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
@@ -19,10 +19,15 @@ export const fetchMovies = async () => {
                 }
             );
 
-            response.json().then(async (data) => {
+            response.json().then((data) => {
                 data.results.map(async (movieObj) => {
+                    const { id } = movieObj;
+                    const details = await fetchMovieDetails(id);
+                    const cast = await fetchMovieCast(id);
+                    const fullDetails = {...details, ...cast};
+
                     const movie = new Movie({
-                        ...movieObj,
+                        ...fullDetails,
                         timestamp: moment().add(2, 'hours').format()
                     });
 
@@ -38,20 +43,46 @@ export const fetchMovies = async () => {
 export const fetchMovieDetails = async (id) => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
+    const omdbUrl = process.env.OMDB_URL;
+    const omdbApiKey = process.env.OMDB_API_KEY;
+
     try {
-        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
+        const movieDbResponse = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
                 method: 'GET',
                 headers: defaultHeaders
             }
         );
 
-        return response.json();
+        const movieDbResponseJson = await movieDbResponse.json();
+
+        const filteredMovieDbResponseJson = {
+            ...movieDbResponseJson,
+            videos: movieDbResponseJson.videos.results
+        }
+
+        const omdbResponse = await fetch(`${omdbUrl}?apikey=${omdbApiKey}&i=${movieDbResponseJson.imdb_id}`, {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        const omdbResponseJson = await omdbResponse.json();
+
+        const cast = await fetchMovieCast(id);
+
+        const response = {
+            ...filteredMovieDbResponseJson,
+            ...cast,
+            social_ratings: omdbResponseJson.Ratings
+        }
+
+        return response;
     } catch (err) {
         console.error(err);
     }
 };
 
-export const fetchMovieCast = async (id) => {
+const fetchMovieCast = async (id) => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
     try {

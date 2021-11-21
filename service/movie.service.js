@@ -3,17 +3,20 @@ import moment from "moment";
 import Movie from "../model/movie.model.js";
 import {
     fetchLatestMovie,
-    fetchMovieCast,
-    fetchMovieDetails,
-    fetchRegionMovies
+    fetchRegionMovies,
+    fetchMovieDetails
 } from "../client/movie.client.js";
 
 export const getMovieDetails = async ({ id }) => {
-    const movieDetails = await fetchMovieDetails(id);
-    const movieCast = await fetchMovieCast(id);
-    const fullDetails = Object.assign({}, movieDetails, movieCast);
+    const details = await Movie.findOne({ id });
 
-    return fullDetails;
+    if (!details) {
+        const apiDetails = await fetchMovieDetails(id);
+
+        return apiDetails;
+    }
+
+    return details;
 };
 
 export const getRecommendedMovies = async ({ page, limit }) => {
@@ -47,6 +50,7 @@ export const getPopularMovies = async ({ page, limit }) => {
 
 
 export const getFeaturedMovies = async ({ limit }) => {
+    // first *limit* movies to feature on carousel on the front page
     const featuredMovies = await Movie
         .find()
         .sort({ popularity: 'desc' })
