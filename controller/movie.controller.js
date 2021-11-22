@@ -174,6 +174,27 @@ const getMovieDetails = (req, res, next) => {
         });
 };
 
+const getPersonDetails = (req, res, next) => {
+    MovieService.getPersonDetails(req.params)
+        .then((personDetails) => {
+            res
+                .status(200)
+                .send(personDetails)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching person details.',
+                    hasErrors: true
+                })
+        });
+};
+
 // routes
 movieRouter.get('/', ipMiddleware, getRegionMovies);
 movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
@@ -182,6 +203,7 @@ movieRouter.get('/popular', getPopularMovies);
 movieRouter.get('/featured', getFeaturedMovies);
 movieRouter.get('/in-theaters', getMoviesInTheaters);
 movieRouter.get('/latest', getLatestMovie);
-movieRouter.get('/details/:id', getMovieDetails);
+movieRouter.get('/:id/details', getMovieDetails);
+movieRouter.get('/people/:id/details', getPersonDetails);
 
 export default movieRouter;

@@ -4,20 +4,9 @@ import Movie from "../model/movie.model.js";
 import {
     fetchLatestMovie,
     fetchRegionMovies,
-    fetchMovieDetails
+    fetchMovieDetails,
+    fetchPersonDetails
 } from "../client/movie.client.js";
-
-export const getMovieDetails = async ({ id }) => {
-    const details = await Movie.findOne({ id });
-
-    if (!details) {
-        const apiDetails = await fetchMovieDetails(id);
-
-        return apiDetails;
-    }
-
-    return details;
-};
 
 export const getRecommendedMovies = async ({ page, limit }) => {
     const recommendedMovies = await Movie
@@ -91,3 +80,22 @@ export const getLatestMovie = async () => {
 
     return latestMovie;
 };
+
+export const getMovieDetails = async ({ id }) => {
+    const details = await Movie.findOne({ id });
+
+    if (!details) {
+        const apiDetails = await fetchMovieDetails(id);
+
+        return apiDetails;
+    }
+
+    return details;
+};
+
+export const getPersonDetails = async ({ id }) => {
+    const details = await fetchPersonDetails(id);
+
+    return details;
+};
+

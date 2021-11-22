@@ -70,10 +70,12 @@ export const fetchMovieDetails = async (id) => {
 
         const cast = await fetchMovieCast(id);
 
+        const social_ratings = omdbResponseJson.Response === 'False' ? null : omdbResponseJson.Ratings;
+
         const response = {
             ...filteredMovieDbResponseJson,
             ...cast,
-            social_ratings: omdbResponseJson.Ratings
+            social_ratings: social_ratings
         }
 
         return response;
@@ -119,6 +121,22 @@ export const fetchLatestMovie = async () => {
 
     try {
         const response = await fetch(appendApiKey(`${movieDbUrl}/movie/latest`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+export const fetchPersonDetails = async (id) => {
+    const movieDbUrl = process.env.MOVIEDB_URL;
+
+    try {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/person/${id}`), {
                 method: 'GET',
                 headers: defaultHeaders
             }
