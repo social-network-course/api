@@ -11,12 +11,13 @@ export const storeUser = async ({ id, name, email, url }, ipLocation) => {
     } else {
         const user = new User({
             id: id,
-            name: name,
             email: email,
-            pictureUrl: url,
             likes: [],
-            watchlist: [],
             location: ipLocation,
+            name: name,
+            pictureUrl: url,
+            ratings: [],
+            watchlist: [],
             timestamp: moment().format()
         });
 
@@ -32,24 +33,25 @@ export const getUserData = async ({ name, id } ) => {
     } else {
         return {
             id: user.id,
-            name: user.name,
             email: user.email,
-            pictureUrl: user.pictureUrl,
             likes: user.likes,
+            location: user.location,
+            name: user.name,
+            pictureUrl: user.pictureUrl,
+            ratings: user.ratings,
             watchlist: user.watchlist,
-            location: user.location
         };
     }
 };
 
-export const storeUserLike = async ({ userId }, { movieId }) => {
-    if (!userId) {
+export const storeUserLike = async ({ id }, { movieId }) => {
+    if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: userId }, { '$addToSet': { 'likes': movieId } }, (error, success) => {
+            User.findOneAndUpdate({ id: id }, { $addToSet: { likes: movieId } }, (error, success) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -60,14 +62,14 @@ export const storeUserLike = async ({ userId }, { movieId }) => {
     }
 };
 
-export const storeUserUnlike = async ({ userId }, { movieId }) => {
-    if (!userId) {
+export const storeUserUnlike = async ({ id }, { movieId }) => {
+    if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: userId }, { '$pull': { 'likes': movieId } }, (error, success) => {
+            User.findOneAndUpdate({ id: id }, { $pull: { likes: movieId } }, (error, success) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -76,16 +78,16 @@ export const storeUserUnlike = async ({ userId }, { movieId }) => {
             });
         });
     }
-}
+};
 
-export const addToUserWatchlist = async ({ userId }, { movieId }) => {
-    if (!userId) {
+export const addToUserWatchlist = async ({ id }, { movieId }) => {
+    if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: userId }, { '$addToSet': { 'watchlist': movieId } }, (error, success) => {
+            User.findOneAndUpdate({ id: id }, { $addToSet: { watchlist: movieId } }, (error, success) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -96,18 +98,41 @@ export const addToUserWatchlist = async ({ userId }, { movieId }) => {
     }
 };
 
-export const removeFromUserWatchlist = async ({ userId }, { movieId }) => {
-    if (!userId) {
+export const removeFromUserWatchlist = async ({ id }, { movieId }) => {
+    if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: userId }, { '$pull': { 'watchlist': movieId } }, (error, success) => {
+            User.findOneAndUpdate({ id: id }, { $pull: { watchlist: movieId } }, (error, success) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
                     return resolve(movieId);
+                }
+            });
+        });
+    }
+};
+
+export const storeMovieRating = async ({ id }, body) => {
+    const movieId = Object.keys(body)[0];
+    const rating = body[movieId];
+
+    if (!id) {
+        throw errorConstants.MISSING_USER_ID;
+    } else if (!movieId) {
+        throw errorConstants.MISSING_MOVIE_ID;
+    } else {
+        return new Promise((resolve, reject) => {
+            User.findOneAndUpdate({ id: id }, { $set: { ratings: { [movieId.toString()]: rating } } }, (error, success) => {
+                if (error) {
+                    throw errorConstants.STORING_DATA_FAILED;
+                } else {
+                    return resolve({
+                        [movieId]: rating
+                    });
                 }
             });
         });

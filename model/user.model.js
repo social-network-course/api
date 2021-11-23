@@ -29,6 +29,9 @@ const userSchema = new Schema({
     watchlist: {
         type: Array
     },
+    ratings: {
+        type: Array
+    },
     timestamp: {
         type: Date,
         required: true,

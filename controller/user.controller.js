@@ -135,12 +135,34 @@ const removeFromUserWatchlist = (req, res, next) => {
         });
 };
 
+const storeMovieRating = (req, res, next) => {
+    UserService.storeMovieRating(req.params, req.body)
+        .then((rating) => {
+            res
+                .status(200)
+                .send(rating)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while storing movie rating.',
+                    hasErrors: true
+                })
+        });
+};
+
 // routes
 userRouter.post('/create', ipMiddleware, storeUser);
 userRouter.get('/current', getUserData);
-userRouter.post('/:userId/movies/likes/add', storeUserLike);
-userRouter.post('/:userId/movies/likes/remove', storeUserUnlike);
-userRouter.post('/:userId/movies/watchlist/add', addToUserWatchlist);
-userRouter.post('/:userId/movies/watchlist/remove', removeFromUserWatchlist);
+userRouter.post('/:id/movies/likes/add', storeUserLike);
+userRouter.post('/:id/movies/likes/remove', storeUserUnlike);
+userRouter.post('/:id/movies/watchlist/add', addToUserWatchlist);
+userRouter.post('/:id/movies/watchlist/remove', removeFromUserWatchlist);
+userRouter.post('/:id/movies/rate', storeMovieRating);
 
 export default userRouter;
