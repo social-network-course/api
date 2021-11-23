@@ -86,7 +86,6 @@ export const getMovieDetails = async ({ id }) => {
 
     if (!details) {
         const apiDetails = await fetchMovieDetails(id);
-
         return apiDetails;
     }
 

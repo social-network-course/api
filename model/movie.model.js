@@ -85,7 +85,7 @@ export const movieSchema = new Schema({
         type: Boolean
     },
     videos: {
-        type: Array
+        type: Object
     },
     vote_average: {
         type: Number
