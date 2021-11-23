@@ -27,5 +27,5 @@ await connectToDb();
 /*await fetchMovies();*/
 
 // server
-const PORT = process.env.HTTP_PORT;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log('Live on ' + PORT));
