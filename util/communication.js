@@ -46,9 +46,9 @@ export const authMiddleware = async (req, res, next) => {
 
 export const locationMiddleware = async (req, res, next) => {
     const clientIp = requestIp.getClientIp(req);
-    /*hardcoded for now because localhost can't get resolved
-    const location = lookup('2a05:4f46:40b:6500:e14a:81a5:73:d365');*/
+    // hardcoded for now because localhost can't get resolved
+    const location = lookup(clientIp);
 
-    res.locals.userLocation = clientIp;
+    res.locals.userLocation = location;
     return next();
 };
