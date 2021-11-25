@@ -1,7 +1,7 @@
 import express from 'express';
 
 import * as UserService from '../service/user.service.js';
-import { ipMiddleware } from "../util/communication.js";
+import { locationMiddleware } from "../util/communication.js";
 import { logger } from "../util/logging.js";
 
 const userRouter = express.Router();
@@ -157,7 +157,7 @@ const storeMovieRating = (req, res, next) => {
 };
 
 // routes
-userRouter.post('/create', ipMiddleware, storeUser);
+userRouter.post('/create', locationMiddleware, storeUser);
 userRouter.get('/current', getUserData);
 userRouter.post('/:id/movies/likes/add', storeUserLike);
 userRouter.post('/:id/movies/likes/remove', storeUserUnlike);

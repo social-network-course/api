@@ -2,7 +2,7 @@ import express from 'express';
 
 import * as MovieService from '../service/movie.service.js';
 import { logger } from "../util/logging.js";
-import { authMiddleware, ipMiddleware } from "../util/communication.js";
+import { authMiddleware, locationMiddleware } from "../util/communication.js";
 
 const movieRouter = express.Router();
 
@@ -196,7 +196,7 @@ const getPersonDetails = (req, res, next) => {
 };
 
 // routes
-movieRouter.get('/', ipMiddleware, getRegionMovies);
+movieRouter.get('/', locationMiddleware, getRegionMovies);
 movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);
