@@ -24,7 +24,7 @@ app.use('/movies', movieRouter);
 
 await connectToDb();
 
-await fetchMovies();
+/*await fetchMovies();*/
 
 // server
 const PORT = process.env.PORT;

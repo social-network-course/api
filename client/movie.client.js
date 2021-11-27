@@ -4,7 +4,7 @@ import moment from "moment";
 import Movie from '../model/movie.model.js';
 import { appendApiKey, defaultHeaders } from "../util/communication.js";
 
-const NUMBER_OF_PAGES = 10;
+const NUMBER_OF_PAGES = 40;
 
 export const fetchMovies = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
