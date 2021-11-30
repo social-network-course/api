@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import User from '../model/user.model.js';
+import { fetchWeather } from "../client/user.client.js";
 import { errorConstants } from "../util/error.js";
 
 export const storeUser = async ({ id, name, email, url }, ipLocation) => {
@@ -31,6 +32,9 @@ export const getUserData = async ({ name, id } ) => {
     if (!user) {
         throw errorConstants.MISSING_USER;
     } else {
+        const { ll } = user.location;
+        const currentWeather = await fetchWeather(ll[0], ll[1]);
+
         return {
             id: user.id,
             email: user.email,
@@ -40,6 +44,7 @@ export const getUserData = async ({ name, id } ) => {
             pictureUrl: user.pictureUrl,
             ratings: user.ratings,
             watchlist: user.watchlist,
+            weather: currentWeather
         };
     }
 };
