@@ -2,7 +2,6 @@ import moment from "moment";
 
 import Movie from "../model/movie.model.js";
 import {
-    fetchLatestMovie,
     fetchRegionMovies,
     fetchMovieDetails,
     fetchPersonDetails
@@ -41,7 +40,7 @@ export const getPopularMovies = async ({ page, limit }) => {
 export const getFeaturedMovies = async ({ limit }) => {
     // first *limit* movies to feature on carousel on the front page
     const featuredMovies = await Movie
-        .find()
+        .find({}, 'id title backdrop_path overview genre_ids vote_average')
         .sort({ popularity: 'desc' })
         .limit(Number(limit));
 
@@ -59,14 +58,14 @@ export const getMoviesInTheaters = async ({ limit }) => {
                 $gte: moment(todayMinusInterval).format('YYYY-MM-DD'),
                 $lt: moment(today).format('YYYY-MM-DD')
             }
-        })
+        }, 'id title poster_path vote_average')
         .sort({ popularity: 'desc' })
         .limit(Number(limit));
 
     return moviesInTheaters;
 };
 
-export const getRegionMovies = async ({ region, limit }, ipLocation) => {
+export const getRegionMovies = async ({ limit }, ipLocation) => {
     const regionMovies = await fetchRegionMovies(ipLocation.country);
 
     return {
@@ -75,10 +74,22 @@ export const getRegionMovies = async ({ region, limit }, ipLocation) => {
     };
 };
 
-export const getLatestMovie = async () => {
-    const latestMovie = await fetchLatestMovie();
+export const getTopRevenueMovies = async ({ limit }) => {
+    const topRevenueMovies = await Movie
+        .find({}, 'id title revenue')
+        .sort({ revenue: 'desc' })
+        .limit(Number(limit));
 
-    return latestMovie;
+    return topRevenueMovies;
+};
+
+export const getMostVisitedMovies = async ({ limit }) => {
+    const mostVisitedMovies = await Movie
+        .find({ visit_counter: { $gt: 0 } }, 'id title poster_path vote_average')
+        .sort({ visit_counter: 'desc' })
+        .limit(Number(limit));
+
+    return mostVisitedMovies;
 };
 
 export const getMovieDetails = async ({ id }) => {

@@ -156,6 +156,27 @@ const storeMovieRating = (req, res, next) => {
         });
 };
 
+const storeMovieVisit = (req, res, next) => {
+    UserService.storeMovieVisit(req.params, req.body)
+        .then((movieId) => {
+            res
+                .status(200)
+                .send(movieId)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while storing movie rating.',
+                    hasErrors: true
+                })
+        });
+};
+
 // routes
 userRouter.post('/create', locationMiddleware, storeUser);
 userRouter.get('/current', getUserData);
@@ -164,5 +185,6 @@ userRouter.post('/:id/movies/likes/remove', storeUserUnlike);
 userRouter.post('/:id/movies/watchlist/add', addToUserWatchlist);
 userRouter.post('/:id/movies/watchlist/remove', removeFromUserWatchlist);
 userRouter.post('/:id/movies/rate', storeMovieRating);
+userRouter.post('/:id/movies/visit', storeMovieVisit);
 
 export default userRouter;

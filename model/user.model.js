@@ -32,6 +32,9 @@ const userSchema = new Schema({
     ratings: {
         type: Array
     },
+    visit_time: {
+        type: Array
+    },
     timestamp: {
         type: Date,
         required: true,

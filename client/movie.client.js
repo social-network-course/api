@@ -105,23 +105,16 @@ export const fetchRegionMovies = async (region, limit) => {
             }
         );
 
-        return response.json();
-    } catch (err) {
-        console.error(err);
-    }
-};
+        const jsonResponse = await response.json();
 
-export const fetchLatestMovie = async () => {
-    const movieDbUrl = process.env.MOVIEDB_URL;
+        const mappedDetails = jsonResponse.results.map((movie) => ({
+            id: movie.id,
+            title: movie.title,
+            poster_path: movie.poster_path,
+            vote_average: movie.vote_average
+        }));
 
-    try {
-        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/latest`), {
-                method: 'GET',
-                headers: defaultHeaders
-            }
-        );
-
-        return response.json();
+        return { results: mappedDetails };
     } catch (err) {
         console.error(err);
     }

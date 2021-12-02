@@ -132,12 +132,12 @@ const getRegionMovies = (req, res, next) => {
         });
 };
 
-const getLatestMovie = (req, res, next) => {
-    MovieService.getLatestMovie()
-        .then((movie) => {
+const getTopRevenueMovies = (req, res, next) => {
+    MovieService.getTopRevenueMovies(req.query)
+        .then((movies) => {
             res
                 .status(200)
-                .send(movie)
+                .send(movies)
         })
         .catch(err => {
             logger.log({
@@ -147,7 +147,28 @@ const getLatestMovie = (req, res, next) => {
             res
                 .status(500)
                 .send({
-                    message: 'Error while fetching latest movie.',
+                    message: 'Error while fetching top revenue movies.',
+                    hasErrors: true
+                })
+        });
+};
+
+const getMostVisitedMovies = (req, res, next) => {
+    MovieService.getMostVisitedMovies(req.query)
+        .then((movies) => {
+            res
+                .status(200)
+                .send(movies)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching most visited movies.',
                     hasErrors: true
                 })
         });
@@ -196,13 +217,14 @@ const getPersonDetails = (req, res, next) => {
 };
 
 // routes
-movieRouter.get('/', locationMiddleware, getRegionMovies);
 movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);
 movieRouter.get('/featured', getFeaturedMovies);
 movieRouter.get('/in-theaters', getMoviesInTheaters);
-movieRouter.get('/latest', getLatestMovie);
+movieRouter.get('/region', locationMiddleware, getRegionMovies);
+movieRouter.get('/top-revenue', getTopRevenueMovies);
+movieRouter.get('/most-visited', getMostVisitedMovies);
 movieRouter.get('/:id/details', getMovieDetails);
 movieRouter.get('/people/:id/details', getPersonDetails);
 

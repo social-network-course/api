@@ -87,6 +87,10 @@ export const movieSchema = new Schema({
     videos: {
         type: Object
     },
+    visit_counter: {
+        type: Number,
+        default: 0
+    },
     vote_average: {
         type: Number
     },
