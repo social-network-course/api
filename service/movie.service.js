@@ -85,7 +85,7 @@ export const getTopRevenueMovies = async ({ limit }) => {
 
 export const getMostVisitedMovies = async ({ limit }) => {
     const mostVisitedMovies = await Movie
-        .find({ visit_counter: { $gt: 0 } }, 'id title poster_path vote_average')
+        .find({ visit_counter: { $gt: 0 } }, 'id title backdrop_path visit_counter')
         .sort({ visit_counter: 'desc' })
         .limit(Number(limit));
 
