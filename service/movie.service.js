@@ -10,6 +10,7 @@ import {
 export const getRecommendedMovies = async ({ page, limit }) => {
     const recommendedMovies = await Movie
         .find()
+        .sort({ popularity: 'desc' })
         .skip(limit * (Number(page) - 1))
         .limit(Number(limit));
 
