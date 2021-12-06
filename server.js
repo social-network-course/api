@@ -1,7 +1,9 @@
 import express from 'express';
+
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import prerender from 'prerender-node';
 
 import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
@@ -17,6 +19,7 @@ const app = express();
 app.use(cors({ credentials: true, origin: process.env.WEBUI_URL, preflight: true } ));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(prerender);
 
 // api routes
 app.use('/users', authMiddleware, userRouter);
