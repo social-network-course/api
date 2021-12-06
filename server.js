@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
-import { fetchMovies } from "./client/movie.client.js";
+import { fetchMoviesAndGenres } from "./client/movie.client.js";
 import { authMiddleware } from "./util/communication.js";
 
 dotenv.config();
@@ -24,7 +24,7 @@ app.use('/movies', movieRouter);
 
 await connectToDb();
 
-/*await fetchMovies();*/
+/*await fetchMoviesAndGenres();*/
 
 // server
 const PORT = process.env.PORT;

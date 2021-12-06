@@ -1,11 +1,20 @@
 import moment from "moment";
 
 import Movie from "../model/movie.model.js";
+import Genre from "../model/genre.model.js";
 import {
     fetchRegionMovies,
     fetchMovieDetails,
     fetchPersonDetails
 } from "../client/movie.client.js";
+
+export const getGenres = async () => {
+    const genres = await Genre
+        .find({}, 'id name')
+        .sort({ name: 'asc' })
+
+    return genres;
+};
 
 export const getRecommendedMovies = async ({ page, limit }) => {
     const recommendedMovies = await Movie

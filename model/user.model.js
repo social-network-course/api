@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import moment from "moment";
 
 const Schema = mongoose.Schema;
 
@@ -23,6 +24,9 @@ const userSchema = new Schema({
     location: {
         type: Object
     },
+    favourite_genres: {
+        type: Array
+    },
     likes: {
         type: Array
     },
@@ -32,12 +36,12 @@ const userSchema = new Schema({
     ratings: {
         type: Array
     },
-    visit_time: {
+    visit_times: {
         type: Array
     },
     timestamp: {
         type: Date,
-        required: true,
+        default: () => moment().utc(true)
     }
 }, { collection: 'users' });
 

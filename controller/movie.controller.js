@@ -6,6 +6,27 @@ import { authMiddleware, locationMiddleware } from "../util/communication.js";
 
 const movieRouter = express.Router();
 
+const getGenres = (req, res, next) => {
+    MovieService.getGenres()
+        .then((genres) => {
+            res
+                .status(200)
+                .send(genres)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching genres.',
+                    hasErrors: true
+                })
+        });
+};
+
 const getRecommendedMovies = (req, res, next) => {
     MovieService.getRecommendedMovies(req.query)
         .then((movies) => {
@@ -217,6 +238,7 @@ const getPersonDetails = (req, res, next) => {
 };
 
 // routes
+movieRouter.get('/genres', getGenres);
 movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);

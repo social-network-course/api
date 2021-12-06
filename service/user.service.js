@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import User from '../model/user.model.js';
 import Movie from '../model/movie.model.js';
 import { fetchWeather } from "../client/user.client.js";
@@ -14,13 +12,9 @@ export const storeUser = async ({ id, name, email, url }, ipLocation) => {
         const user = new User({
             id: id,
             email: email,
-            likes: [],
             location: ipLocation,
             name: name,
-            pictureUrl: url,
-            ratings: [],
-            watchlist: [],
-            timestamp: moment().utc().format()
+            pictureUrl: url
         });
 
         await user.save();
@@ -33,8 +27,11 @@ export const getUserData = async ({ name, id } ) => {
     if (!user) {
         throw errorConstants.MISSING_USER;
     } else {
-        const { ll } = user.location;
-        const currentWeather = await fetchWeather(ll[0], ll[1]);
+        let currentWeather;
+        if (user.location) {
+            const { ll } = user.location;
+            currentWeather = await fetchWeather(ll[0], ll[1]);
+        }
 
         return {
             id: user.id,
@@ -43,6 +40,7 @@ export const getUserData = async ({ name, id } ) => {
             location: user.location,
             name: user.name,
             pictureUrl: user.pictureUrl,
+            favourite_genres: user.favourite_genres,
             ratings: user.ratings,
             watchlist: user.watchlist,
             weather: currentWeather
@@ -50,14 +48,50 @@ export const getUserData = async ({ name, id } ) => {
     }
 };
 
-export const storeUserLike = async ({ id }, { movieId }) => {
+export const addToFavouriteGenres = async ({ id }, { genreId }) => {
+    if (!id) {
+        throw errorConstants.MISSING_USER_ID;
+    } else if (!genreId) {
+        throw errorConstants.MISSING_GENRE_ID;
+    } else {
+        return new Promise((resolve, reject) => {
+            User.updateOne({ id: id }, { $addToSet: { favourite_genres: genreId } }, null, (error, doc) => {
+                if (error) {
+                    throw errorConstants.STORING_DATA_FAILED;
+                } else {
+                    resolve(genreId);
+                }
+            });
+        });
+    }
+};
+
+export const removeFromFavouriteGenres = async ({ id }, { genreId }) => {
+    if (!id) {
+        throw errorConstants.MISSING_USER_ID;
+    } else if (!genreId) {
+        throw errorConstants.MISSING_GENRE_ID;
+    } else {
+        return new Promise((resolve, reject) => {
+            User.updateOne({ id: id }, { $pull: { favourite_genres: genreId } }, null, (error, doc) => {
+                if (error) {
+                    throw errorConstants.STORING_DATA_FAILED;
+                } else {
+                    return resolve(genreId);
+                }
+            });
+        });
+    }
+};
+
+export const addToLikedList = async ({ id }, { movieId }) => {
     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $addToSet: { likes: movieId } }, null, (error, doc) => {
+            User.updateOne({ id: id }, { $addToSet: { likes: movieId } }, null, (error, doc) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -68,14 +102,14 @@ export const storeUserLike = async ({ id }, { movieId }) => {
     }
 };
 
-export const storeUserUnlike = async ({ id }, { movieId }) => {
+export const removeFromLikedList = async ({ id }, { movieId }) => {
     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $pull: { likes: movieId } },null,  (error, doc) => {
+            User.updateOne({ id: id }, { $pull: { likes: movieId } },null,  (error, doc) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -86,14 +120,14 @@ export const storeUserUnlike = async ({ id }, { movieId }) => {
     }
 };
 
-export const addToUserWatchlist = async ({ id }, { movieId }) => {
+export const addToWatchlist = async ({ id }, { movieId }) => {
     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $addToSet: { watchlist: movieId } }, null, (error, doc) => {
+            User.updateOne({ id: id }, { $addToSet: { watchlist: movieId } }, null, (error, doc) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -104,14 +138,14 @@ export const addToUserWatchlist = async ({ id }, { movieId }) => {
     }
 };
 
-export const removeFromUserWatchlist = async ({ id }, { movieId }) => {
+export const removeFromWatchlist = async ({ id }, { movieId }) => {
     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $pull: { watchlist: movieId } }, null, (error, doc) => {
+            User.updateOne({ id: id }, { $pull: { watchlist: movieId } }, null, (error, doc) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
@@ -123,49 +157,108 @@ export const removeFromUserWatchlist = async ({ id }, { movieId }) => {
 };
 
 export const storeMovieRating = async ({ id }, body) => {
-    const movieId = Object.keys(body)[0];
-    const rating = body[movieId];
+    const movieId = Number(body['movieId']);
+    const rating = body['rating'];
 
-    if (!id) {
+     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $addToSet: { ratings: { [movieId.toString()]: rating } } }, null, (error, doc) => {
-                if (error) {
-                    throw errorConstants.STORING_DATA_FAILED;
-                } else {
-                    return resolve({
-                        [movieId]: rating
-                    });
+            User.updateOne(
+                { id: id },
+                [{
+                    $set: {
+                            ratings: {
+                                $cond: [
+                                    { $in: [movieId, '$ratings.movieId'] },
+                                    {
+                                        $map: {
+                                            input: '$ratings',
+                                            in: {
+                                                $cond: [
+                                                    { $eq: ['$$this.movieId', movieId] },
+                                                    {
+                                                        movieId: "$$this.movieId",
+                                                        rating: rating
+                                                    },
+                                                    '$$this'
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    { $concatArrays: ['$ratings', [{ movieId: movieId, rating: rating }]] }
+                                ]
+                            }
+                    }
+                }],
+                null,
+                (error, document) => {
+                    if (error) {
+                        throw errorConstants.STORING_DATA_FAILED;
+                    } else {
+                        return resolve({
+                            movieId: movieId,
+                            rating: rating
+                        });
+                    }
                 }
-            });
+            );
         });
     }
 };
 
-export const storeMovieVisit = async ({ id }, body) => {
-    const movieId = Object.keys(body)[0];
-    const visitTime = body[movieId];
-
+export const storeMovieVisit = async ({ id }, { movieId, time }) => {
     if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
         return new Promise((resolve, reject) => {
-            User.findOneAndUpdate({ id: id }, { $addToSet: { visit_time: { [movieId.toString()]: visitTime } } }, null, (error, doc) => {
-                if (error) {
-                    throw errorConstants.STORING_DATA_FAILED;
+            User.updateOne(
+                { id: id },
+                [{
+                    $set: {
+                        visit_times: {
+                            $cond: [
+                                { $in: [movieId, '$visit_times.movieId'] },
+                                {
+                                    $map: {
+                                        input: '$visit_times',
+                                        in: {
+                                            $cond: [
+                                                { $eq: ['$$this.movieId', movieId] },
+                                                {
+                                                    movieId: "$$this.movieId",
+                                                    time: { $add: ['$$this.time', time] }
+                                                },
+                                                '$$this'
+                                            ]
+                                        }
+                                    }
+                                },
+                                { $concatArrays: ['$visit_times', [{ movieId: movieId, time: time }]] }
+                            ]
+                        }
+                    }
+                }],
+                null,
+                (error, document) => {
+                    if (error) {console.log(error)
+                        throw errorConstants.STORING_DATA_FAILED;
+                    }
                 }
-            });
+            );
 
             Movie.findOneAndUpdate({ id: movieId }, { $inc: { visit_counter: 1 } }, null,(error, doc) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    return resolve(movieId);
+                    return resolve({
+                        movieId: movieId,
+                        time: time
+                    });
                 }
             });
         });

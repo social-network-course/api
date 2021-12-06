@@ -2,24 +2,25 @@ import fetch from "node-fetch";
 import moment from "moment";
 
 import Movie from '../model/movie.model.js';
+import Genre from '../model/genre.model.js';
 import { appendApiKey, defaultHeaders } from "../util/communication.js";
 
 const NUMBER_OF_PAGES = 40;
 
-export const fetchMovies = async () => {
+export const fetchMoviesAndGenres = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
     await Movie.deleteMany({});
 
-    for (let i = 1; i <= NUMBER_OF_PAGES; i++) {
-        try {
-            const response = await fetch(appendApiKey(`${movieDbUrl}/movie/popular`).concat(`&page=${i}`), {
+    try {
+        for (let i = 1; i <= NUMBER_OF_PAGES; i++) {
+            const moviesResponse = await fetch(appendApiKey(`${movieDbUrl}/movie/popular`).concat(`&page=${i}`), {
                     method: 'GET',
                     headers: defaultHeaders
                 }
             );
 
-            response.json().then((data) => {
+            moviesResponse.json().then((data) => {
                 data.results.map(async (movieObj) => {
                     const { id } = movieObj;
                     const details = await fetchMovieDetails(id);
@@ -34,9 +35,28 @@ export const fetchMovies = async () => {
                     await movie.save();
                 });
             });
-        } catch (err) {
-            console.error(err);
         }
+        const genresResponse = await fetch(appendApiKey(`${movieDbUrl}/genre/movie/list`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        genresResponse.json().then((data) => {
+            data.genres.map(async (genreObj) => {
+                const { id, name } = genreObj;
+
+                const genre = new Genre({
+                    id,
+                    name,
+                    timestamp: moment().add(2, 'hours').format()
+                });
+
+                await genre.save();
+            });
+        });
+    } catch (err) {
+        console.error(err);
     }
 };
 
