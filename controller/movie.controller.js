@@ -27,6 +27,27 @@ const getGenres = (req, res, next) => {
         });
 };
 
+const getStatuses = (req, res, next) => {
+    MovieService.getStatuses()
+        .then((statuses) => {
+            res
+                .status(200)
+                .send(statuses)
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching statuses.',
+                    hasErrors: true
+                })
+        });
+};
+
 const getRecommendedMovies = (req, res, next) => {
     MovieService.getRecommendedMovies(req.query)
         .then((movies) => {
@@ -239,6 +260,7 @@ const getPersonDetails = (req, res, next) => {
 
 // routes
 movieRouter.get('/genres', getGenres);
+movieRouter.get('/statuses', getStatuses);
 movieRouter.get('/recommended', authMiddleware, getRecommendedMovies);
 movieRouter.get('/top-rated', getTopRatedMovies);
 movieRouter.get('/popular', getPopularMovies);

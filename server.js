@@ -10,6 +10,7 @@ import movieRouter from "./controller/movie.controller.js";
 import connectToDb from './_helpers/db.config.js';
 import { fetchMoviesAndGenres } from "./client/movie.client.js";
 import { authMiddleware } from "./util/communication.js";
+import { setStatuses } from "./util/db.js";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ app.use('/movies', movieRouter);
 await connectToDb();
 
 /*await fetchMoviesAndGenres();*/
+
+/*setStatuses();*/
 
 // server
 const PORT = process.env.PORT;

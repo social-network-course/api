@@ -2,6 +2,7 @@ import moment from "moment";
 
 import Movie from "../model/movie.model.js";
 import Genre from "../model/genre.model.js";
+import Status from "../model/status.model.js";
 import {
     fetchRegionMovies,
     fetchMovieDetails,
@@ -16,6 +17,14 @@ export const getGenres = async () => {
     return genres;
 };
 
+export const getStatuses = async () => {
+    const statuses = await Status
+        .find({}, 'id name')
+        .sort({ name: 'asc' })
+
+    return statuses;
+};
+
 export const getRecommendedMovies = async ({ page, limit }) => {
     const recommendedMovies = await Movie
         .find()
@@ -26,14 +35,33 @@ export const getRecommendedMovies = async ({ page, limit }) => {
     return recommendedMovies;
 };
 
-export const getTopRatedMovies = async ({ page, limit }) => {
+export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
+    const genreFilters = genre.split(',');
+    const statusFilters = status.split(',');
+
+    let query = {};
+
+    if (genre) {
+        query['genres.name'] = { $all: genreFilters };
+    }
+
+    // a movie can be in only one status
+    if (status) {
+        query['status'] = { $in: statusFilters };
+    }
+
+    const totalCount = await Movie.countDocuments(query);
+
     const topRatedMovies = await Movie
-        .find()
+        .find(query)
         .sort({ vote_average: 'desc' })
         .skip(limit * (Number(page) - 1))
         .limit(Number(limit));
 
-    return topRatedMovies;
+    return {
+        movies: topRatedMovies,
+        pages: Math.ceil(totalCount / limit)
+    };
 };
 
 export const getPopularMovies = async ({ page, limit }) => {
