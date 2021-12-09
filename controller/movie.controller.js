@@ -76,7 +76,7 @@ const getTopRatedMovies = (req, res, next) => {
                 .status(200)
                 .send(movies)
         })
-        .catch(err => {
+        .catch(err => {console.log(err)
             logger.log({
                 level: 'error',
                 message: err

@@ -25,53 +25,73 @@ export const getStatuses = async () => {
     return statuses;
 };
 
-export const getRecommendedMovies = async ({ page, limit }) => {
-    const recommendedMovies = await Movie
-        .find()
-        .sort({ popularity: 'desc' })
-        .skip(limit * (Number(page) - 1))
-        .limit(Number(limit));
-
-    return recommendedMovies;
-};
-
 export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
-    const genreFilters = genre.split(',');
-    const statusFilters = status.split(',');
+    const query = addFilterQuery(genre, status);
 
-    let query = {};
-
-    if (genre) {
-        query['genres.name'] = { $all: genreFilters };
-    }
-
-    // a movie can be in only one status
-    if (status) {
-        query['status'] = { $in: statusFilters };
-    }
-
-    const totalCount = await Movie.countDocuments(query);
-
-    const topRatedMovies = await Movie
-        .find(query)
-        .sort({ vote_average: 'desc' })
-        .skip(limit * (Number(page) - 1))
-        .limit(Number(limit));
+    const movies = await Movie.aggregate([
+        { $match: query },
+        { $facet: {
+            data: [
+                { $sort: { vote_average: -1 } },
+                { $skip: limit * (Number(page) - 1) },
+                { $limit: Number(limit) }
+            ],
+            info: [
+                { $count: 'total' }
+            ]
+        }}
+    ]);
 
     return {
-        movies: topRatedMovies,
-        pages: Math.ceil(totalCount / limit)
+        movies: movies[0].data,
+        pages: movies[0].info.length > 0 ? Math.ceil(Number(movies[0].info[0].total) / limit) : movies[0].info
     };
 };
 
-export const getPopularMovies = async ({ page, limit }) => {
-    const popularMovies = await Movie
-        .find()
-        .sort({ popularity: 'desc' })
-        .skip(limit * (Number(page) - 1))
-        .limit(Number(limit));
+export const getPopularMovies = async ({ page, limit, genre, status }) => {
+    const query = addFilterQuery(genre, status);
 
-    return popularMovies;
+    const movies = await Movie.aggregate([
+        { $match: query },
+        { $facet: {
+                data: [
+                    { $sort: { popularity: -1 } },
+                    { $skip: limit * (Number(page) - 1) },
+                    { $limit: Number(limit) }
+                ],
+                info: [
+                    { $count: 'total' }
+                ]
+            }}
+    ]);
+
+    return {
+        movies: movies[0].data,
+        pages: movies[0].info.length > 0 ? Math.ceil(Number(movies[0].info[0].total) / limit) : movies[0].info
+    };
+};
+
+export const getRecommendedMovies = async ({ page, limit, genre, status }) => {
+    const query = addFilterQuery(genre, status);
+
+    const movies = await Movie.aggregate([
+        { $match: query },
+        { $facet: {
+                data: [
+                    { $sort: { popularity: -1 } },
+                    { $skip: limit * (Number(page) - 1) },
+                    { $limit: Number(limit) }
+                ],
+                info: [
+                    { $count: 'total' }
+                ]
+            }}
+    ]);
+
+    return {
+        movies: movies[0].data,
+        pages: movies[0].info.length > 0 ? Math.ceil(Number(movies[0].info[0].total) / limit) : movies[0].info
+    };
 };
 
 
@@ -146,4 +166,22 @@ export const getPersonDetails = async ({ id }) => {
 
     return details;
 };
+
+const addFilterQuery = (genre, status) => {
+    const genreFilters = genre.split(',');
+    const statusFilters = status.split(',');
+
+    let query = {};
+
+    if (genre) {
+        query['genres.name'] = { $all: genreFilters };
+    }
+
+    // a movie can be in only one status
+    if (status) {
+        query['status'] = { $in: statusFilters };
+    }
+
+    return query;
+}
 
