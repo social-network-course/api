@@ -28,19 +28,7 @@ export const getStatuses = async () => {
 export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await Movie.aggregate([
-        { $match: query },
-        { $facet: {
-            data: [
-                { $sort: { vote_average: -1 } },
-                { $skip: limit * (Number(page) - 1) },
-                { $limit: Number(limit) }
-            ],
-            info: [
-                { $count: 'total' }
-            ]
-        }}
-    ]);
+    const movies = await buildAggregation(query, { vote_average: -1 }, limit, page);
 
     return {
         movies: movies[0].data,
@@ -51,19 +39,7 @@ export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
 export const getPopularMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await Movie.aggregate([
-        { $match: query },
-        { $facet: {
-                data: [
-                    { $sort: { popularity: -1 } },
-                    { $skip: limit * (Number(page) - 1) },
-                    { $limit: Number(limit) }
-                ],
-                info: [
-                    { $count: 'total' }
-                ]
-            }}
-    ]);
+    const movies = await buildAggregation(query, { popularity: -1 }, limit, page);
 
     return {
         movies: movies[0].data,
@@ -74,26 +50,13 @@ export const getPopularMovies = async ({ page, limit, genre, status }) => {
 export const getRecommendedMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await Movie.aggregate([
-        { $match: query },
-        { $facet: {
-                data: [
-                    { $sort: { popularity: -1 } },
-                    { $skip: limit * (Number(page) - 1) },
-                    { $limit: Number(limit) }
-                ],
-                info: [
-                    { $count: 'total' }
-                ]
-            }}
-    ]);
+    const movies = await buildAggregation(query, { popularity: -1 }, limit, page);
 
     return {
         movies: movies[0].data,
         pages: movies[0].info.length > 0 ? Math.ceil(Number(movies[0].info[0].total) / limit) : movies[0].info
     };
 };
-
 
 export const getFeaturedMovies = async ({ limit }) => {
     // first *limit* movies to feature on carousel on the front page
@@ -183,5 +146,23 @@ const addFilterQuery = (genre, status) => {
     }
 
     return query;
-}
+};
+
+const buildAggregation = async (query, sort, limit, page) => {
+    const movies = await Movie.aggregate([
+        { $match: query },
+        { $facet: {
+                data: [
+                    { $sort: sort },
+                    { $skip: limit * (Number(page) - 1) },
+                    { $limit: Number(limit) }
+                ],
+                info: [
+                    { $count: 'total' }
+                ]
+            }}
+    ]);
+
+     return movies;
+};
 
