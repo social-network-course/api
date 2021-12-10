@@ -5,9 +5,9 @@ import Movie from '../model/movie.model.js';
 import Genre from '../model/genre.model.js';
 import { appendApiKey, defaultHeaders } from "../util/communication.js";
 
-const NUMBER_OF_PAGES = 40;
+const NUMBER_OF_PAGES = 50;
 
-export const fetchMoviesAndGenres = async () => {
+export const fetchMovies = async () => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
     await Movie.deleteMany({});
@@ -24,11 +24,9 @@ export const fetchMoviesAndGenres = async () => {
                 data.results.map(async (movieObj) => {
                     const { id } = movieObj;
                     const details = await fetchMovieDetails(id);
-                    const cast = await fetchMovieCast(id);
-                    const fullDetails = {...details, ...cast};
 
                     const movie = new Movie({
-                        ...fullDetails,
+                        ...details,
                         timestamp: moment().add(2, 'hours').format()
                     });
 
@@ -36,6 +34,17 @@ export const fetchMoviesAndGenres = async () => {
                 });
             });
         }
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+export const fetchGenres = async () => {
+    const movieDbUrl = process.env.MOVIEDB_URL;
+
+    await Genre.deleteMany({});
+
+    try {
         const genresResponse = await fetch(appendApiKey(`${movieDbUrl}/genre/movie/list`), {
                 method: 'GET',
                 headers: defaultHeaders
@@ -61,41 +70,61 @@ export const fetchMoviesAndGenres = async () => {
 };
 
 export const fetchMovieDetails = async (id) => {
+    const tmdbResponse = await fetchTmdbDetails(id);
+
+    let omdbResponse;
+    if (tmdbResponse.imdb_id) {
+        omdbResponse = await fetchOmdbDetails(tmdbResponse.imdb_id);
+
+    }
+    const cast = await fetchMovieCast(id);
+
+    const details = {
+        ...tmdbResponse,
+        ...cast,
+        ...omdbResponse
+    }
+
+    return details;
+};
+
+const fetchTmdbDetails = async (id) => {
     const movieDbUrl = process.env.MOVIEDB_URL;
 
+    try {
+        const response = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
+};
+
+const fetchOmdbDetails = async (imdbId) => {
     const omdbUrl = process.env.OMDB_URL;
     const omdbApiKey = process.env.OMDB_API_KEY;
 
     try {
-        const movieDbResponse = await fetch(appendApiKey(`${movieDbUrl}/movie/${id}`).concat('&append_to_response=videos'), {
+        const response = await fetch(`${omdbUrl}?apikey=${omdbApiKey}&i=${imdbId}`, {
                 method: 'GET',
                 headers: defaultHeaders
             }
         );
 
-        const movieDbResponseJson = await movieDbResponse.json();
+        const omdbResponseJson = await response.json();
+        const socialRatings = omdbResponseJson.Response === 'False' ? null : omdbResponseJson.Ratings;
 
-        const omdbResponse = await fetch(`${omdbUrl}?apikey=${omdbApiKey}&i=${movieDbResponseJson.imdb_id}`, {
-                method: 'GET',
-                headers: defaultHeaders
-            }
-        );
-
-        const omdbResponseJson = await omdbResponse.json();
-
-        const cast = await fetchMovieCast(id);
-
-        const social_ratings = omdbResponseJson.Response === 'False' ? null : omdbResponseJson.Ratings;
-
-        const response = {
-            ...movieDbResponseJson,
-            ...cast,
-            social_ratings: social_ratings
-        }
-
-        return response;
+        return {
+            social_ratings: socialRatings
+        };
     } catch (err) {
         console.error(err);
+        return null;
     }
 };
 
@@ -112,6 +141,7 @@ const fetchMovieCast = async (id) => {
         return response.json();
     } catch (err) {
         console.error(err);
+        return null;
     }
 };
 
