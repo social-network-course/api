@@ -16,6 +16,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "geoip-lite": "^1.4.2",
+    "google-profanity-words": "^1.0.0",
     "moment": "^2.29.1",
     "mongodb": "^4.1.2",
     "mongoose": "^6.0.9",

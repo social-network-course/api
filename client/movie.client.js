@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import moment from "moment";
+import profanity from 'google-profanity-words';
 
 import Movie from '../model/movie.model.js';
 import Genre from '../model/genre.model.js';
@@ -25,12 +26,14 @@ export const fetchMovies = async () => {
                     const { id } = movieObj;
                     const details = await fetchMovieDetails(id);
 
-                    const movie = new Movie({
-                        ...details,
-                        timestamp: moment().add(2, 'hours').format()
-                    });
+                    if (profanity.list().some((profanity) => details.title.includes(profanity.trim()))) {
+                        const movie = new Movie({
+                            ...details,
+                            timestamp: moment().add(2, 'hours').format()
+                        });
 
-                    await movie.save();
+                        await movie.save();
+                    }
                 });
             });
         }
