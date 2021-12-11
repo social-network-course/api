@@ -1,6 +1,6 @@
 import express from 'express';
 
-import * as DeletionService from '../service/deletion.service';
+import * as DeletionService from '../service/deletion.service.js';
 import { logger } from "../util/logging.js";
 
 const deletionRouter = express.Router();
@@ -59,3 +59,5 @@ const checkStatus = (req, res, next) => {
 
 deletionRouter.post('/', deleteUser);
 deletionRouter.post('/status', checkStatus);
+
+export default deletionRouter;
