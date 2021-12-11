@@ -59,7 +59,7 @@ export const addToFavouriteGenres = async ({ id }, { genreId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    resolve(genreId);
+                    resolve(genreId.toString());
                 }
             });
         });
@@ -77,7 +77,7 @@ export const removeFromFavouriteGenres = async ({ id }, { genreId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    return resolve(genreId);
+                    return resolve(genreId.toString());
                 }
             });
         });
@@ -95,7 +95,7 @@ export const addToLikedList = async ({ id }, { movieId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    resolve(movieId);
+                    resolve(movieId.toString());
                 }
             });
         });
@@ -113,7 +113,7 @@ export const removeFromLikedList = async ({ id }, { movieId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    return resolve(movieId);
+                    return resolve(movieId.toString());
                 }
             });
         });
@@ -131,7 +131,7 @@ export const addToWatchlist = async ({ id }, { movieId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    resolve(movieId);
+                    resolve(movieId.toString());
                 }
             });
         });
@@ -149,7 +149,7 @@ export const removeFromWatchlist = async ({ id }, { movieId }) => {
                 if (error) {
                     throw errorConstants.STORING_DATA_FAILED;
                 } else {
-                    return resolve(movieId);
+                    return resolve(movieId.toString());
                 }
             });
         });

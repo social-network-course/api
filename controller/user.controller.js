@@ -14,7 +14,7 @@ const storeUser = (req, res, next) => {
                 .send({
                     message: 'Successfully stored user data.',
                     hasErrors: false
-                })
+                });
         })
         .catch(err => {
             logger.log({
@@ -26,7 +26,7 @@ const storeUser = (req, res, next) => {
                 .send({
                     message: 'Error while storing user data.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -35,7 +35,7 @@ const getUserData = (req, res, next) => {
         .then((data) => {
             res
                 .status(200)
-                .send(data)
+                .send(data);
         })
         .catch(err => {
             logger.log({
@@ -47,7 +47,7 @@ const getUserData = (req, res, next) => {
                 .send({
                     message: 'Error while fetching user data.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -56,7 +56,7 @@ const addToFavouriteGenres = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -68,7 +68,7 @@ const addToFavouriteGenres = (req, res, next) => {
                 .send({
                     message: 'Error while storing genre.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -77,7 +77,7 @@ const removeFromFavouriteGenres = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -89,7 +89,7 @@ const removeFromFavouriteGenres = (req, res, next) => {
                 .send({
                     message: 'Error while removing genre.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -98,7 +98,7 @@ const addToLikedList = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -110,7 +110,7 @@ const addToLikedList = (req, res, next) => {
                 .send({
                     message: 'Error while adding to liked list.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -119,7 +119,7 @@ const removeFromLikedList = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -131,7 +131,7 @@ const removeFromLikedList = (req, res, next) => {
                 .send({
                     message: 'Error while removing from liked list.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -140,7 +140,7 @@ const addToWatchlist = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -152,7 +152,7 @@ const addToWatchlist = (req, res, next) => {
                 .send({
                     message: 'Error while adding to watchlist.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -161,7 +161,7 @@ const removeFromWatchlist = (req, res, next) => {
         .then((id) => {
             res
                 .status(200)
-                .send(id.toString())
+                .send(id);
         })
         .catch(err => {
             logger.log({
@@ -173,7 +173,7 @@ const removeFromWatchlist = (req, res, next) => {
                 .send({
                     message: 'Error while removing from watchlist.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -182,7 +182,7 @@ const storeMovieRating = (req, res, next) => {
         .then((data) => {
             res
                 .status(200)
-                .send(data)
+                .send(data);
         })
         .catch(err => {
             logger.log({
@@ -194,7 +194,7 @@ const storeMovieRating = (req, res, next) => {
                 .send({
                     message: 'Error while storing movie rating.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -203,7 +203,7 @@ const storeMovieVisit = (req, res, next) => {
         .then((data) => {
             res
                 .status(200)
-                .send(data)
+                .send(data);
         })
         .catch(err => {
             logger.log({
@@ -215,7 +215,7 @@ const storeMovieVisit = (req, res, next) => {
                 .send({
                     message: 'Error while storing movie visit.',
                     hasErrors: true
-                })
+                });
         });
 };
 

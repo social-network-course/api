@@ -11,7 +11,7 @@ const getGenres = (req, res, next) => {
         .then((genres) => {
             res
                 .status(200)
-                .send(genres)
+                .send(genres);
         })
         .catch(err => {
             logger.log({
@@ -23,7 +23,7 @@ const getGenres = (req, res, next) => {
                 .send({
                     message: 'Error while fetching genres.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -32,7 +32,7 @@ const getStatuses = (req, res, next) => {
         .then((statuses) => {
             res
                 .status(200)
-                .send(statuses)
+                .send(statuses);
         })
         .catch(err => {
             logger.log({
@@ -44,7 +44,7 @@ const getStatuses = (req, res, next) => {
                 .send({
                     message: 'Error while fetching statuses.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -53,7 +53,7 @@ const getRecommendedMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -65,7 +65,7 @@ const getRecommendedMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching recommended movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -74,7 +74,7 @@ const getTopRatedMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {console.log(err)
             logger.log({
@@ -86,7 +86,7 @@ const getTopRatedMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching top rated movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -95,7 +95,7 @@ const getPopularMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -107,7 +107,7 @@ const getPopularMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching popular movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -116,7 +116,7 @@ const getFeaturedMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -128,7 +128,7 @@ const getFeaturedMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching featured movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -137,7 +137,7 @@ const getMoviesInTheaters = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -149,7 +149,7 @@ const getMoviesInTheaters = (req, res, next) => {
                 .send({
                     message: 'Error while fetching movies in theaters.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -158,7 +158,7 @@ const getRegionMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -170,7 +170,7 @@ const getRegionMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching region movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -179,7 +179,7 @@ const getTopRevenueMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -191,7 +191,7 @@ const getTopRevenueMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching top revenue movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -200,7 +200,7 @@ const getMostVisitedMovies = (req, res, next) => {
         .then((movies) => {
             res
                 .status(200)
-                .send(movies)
+                .send(movies);
         })
         .catch(err => {
             logger.log({
@@ -212,7 +212,7 @@ const getMostVisitedMovies = (req, res, next) => {
                 .send({
                     message: 'Error while fetching most visited movies.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -221,7 +221,7 @@ const getMovieDetails = (req, res, next) => {
         .then((movieDetails) => {
             res
                 .status(200)
-                .send(movieDetails)
+                .send(movieDetails);
         })
         .catch(err => {
             logger.log({
@@ -233,7 +233,7 @@ const getMovieDetails = (req, res, next) => {
                 .send({
                     message: 'Error while fetching movie details.',
                     hasErrors: true
-                })
+                });
         });
 };
 
@@ -242,7 +242,7 @@ const getPersonDetails = (req, res, next) => {
         .then((personDetails) => {
             res
                 .status(200)
-                .send(personDetails)
+                .send(personDetails);
         })
         .catch(err => {
             logger.log({
@@ -254,7 +254,7 @@ const getPersonDetails = (req, res, next) => {
                 .send({
                     message: 'Error while fetching person details.',
                     hasErrors: true
-                })
+                });
         });
 };
 
