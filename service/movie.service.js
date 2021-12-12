@@ -28,7 +28,7 @@ export const getStatuses = async () => {
 export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await buildAggregation(query, { vote_average: -1, title: -1 }, limit, page);
+    const movies = await buildAggregation(query, { vote_average: -1, title: 1 }, limit, page);
 
     return {
         movies: movies[0].data,
@@ -39,7 +39,7 @@ export const getTopRatedMovies = async ({ page, limit, genre, status }) => {
 export const getPopularMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await buildAggregation(query, { popularity: -1, title: -1 }, limit, page);
+    const movies = await buildAggregation(query, { popularity: -1, title: 1 }, limit, page);
 
     return {
         movies: movies[0].data,
@@ -50,7 +50,7 @@ export const getPopularMovies = async ({ page, limit, genre, status }) => {
 export const getRecommendedMovies = async ({ page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
-    const movies = await buildAggregation(query, { popularity: -1, title: -1 }, limit, page);
+    const movies = await buildAggregation(query, { popularity: -1, title: 1 }, limit, page);
 
     return {
         movies: movies[0].data,
@@ -59,7 +59,6 @@ export const getRecommendedMovies = async ({ page, limit, genre, status }) => {
 };
 
 export const getFeaturedMovies = async ({ limit }) => {
-    // first *limit* movies to feature on carousel on the front page
     const featuredMovies = await Movie
         .find({}, 'id title backdrop_path overview genre_ids vote_average')
         .sort({ popularity: 'desc' })
