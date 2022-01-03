@@ -26,7 +26,7 @@ export const fetchMovies = async () => {
                     const { id } = movieObj;
                     const details = await fetchMovieDetails(id);
 
-                    if (profanity.list().some((profanity) => details.title.includes(profanity.trim()))) {
+                    if (!profanity.list().some((profanity) => details.title.includes(profanity.trim()))) {
                         const movie = new Movie({
                             ...details,
                             timestamp: moment().add(2, 'hours').format()

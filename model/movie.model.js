@@ -31,6 +31,7 @@ export const movieSchema = new Schema({
         type: Number,
         required: true,
         unique: true,
+        index: true
     },
     imdb_id: {
         type: String

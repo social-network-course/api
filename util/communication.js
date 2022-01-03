@@ -26,10 +26,6 @@ export const authMiddleware = async (req, res, next) => {
         });
 
         response.json().then((data) => {
-            logger.log({
-                level: 'info',
-                message: data
-            });
             if (data.error && data.error.code === 190) {
                 res.status(401).send();
             } else {

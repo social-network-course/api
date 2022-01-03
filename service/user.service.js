@@ -2,6 +2,7 @@ import User from '../model/user.model.js';
 import Movie from '../model/movie.model.js';
 import { fetchWeather } from "../client/user.client.js";
 import { errorConstants } from "../util/error.js";
+import { sortByField } from "../util/general.js";
 
 export const storeUser = async ({ id, name, email, url }, ipLocation) => {
     const user = await User.findOne({ id: id });
@@ -159,52 +160,49 @@ export const removeFromWatchlist = async ({ id }, { movieId }) => {
 export const storeMovieRating = async ({ id }, body) => {
     const movieId = Number(body['movieId']);
     const rating = body['rating'];
+    const genres = body['genres'];
 
      if (!id) {
         throw errorConstants.MISSING_USER_ID;
     } else if (!movieId) {
         throw errorConstants.MISSING_MOVIE_ID;
     } else {
-        return new Promise((resolve, reject) => {
-            User.updateOne(
-                { id: id },
-                [{
-                    $set: {
-                            ratings: {
-                                $cond: [
-                                    { $in: [movieId, '$ratings.movieId'] },
-                                    {
-                                        $map: {
-                                            input: '$ratings',
-                                            in: {
-                                                $cond: [
-                                                    { $eq: ['$$this.movieId', movieId] },
-                                                    {
-                                                        movieId: "$$this.movieId",
-                                                        rating: rating
-                                                    },
-                                                    '$$this'
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    { $concatArrays: ['$ratings', [{ movieId: movieId, rating: rating }]] }
-                                ]
-                            }
-                    }
-                }],
-                null,
-                (error, document) => {
-                    if (error) {
-                        throw errorConstants.STORING_DATA_FAILED;
-                    } else {
-                        return resolve({
-                            movieId: movieId,
-                            rating: rating
-                        });
-                    }
-                }
-            );
+        return new Promise(async (resolve, reject) => {
+            const user = await User.findOne({ id: id });
+            const { ratings, genre_ratings } = user;
+            const userRating = ratings.find((rating) => rating.movieId === movieId);
+
+            if (userRating) {
+                userRating.rating = rating;
+                userRating.genres = genres;
+            } else {
+                ratings.push({
+                    movieId: movieId,
+                    rating: rating,
+                    genres: genres
+                });
+            }
+
+            genres.forEach((genreId) => {
+                const genre = genre_ratings.ratings.find((genre) => genre.genreId === genreId);
+                genre.totalNumberOfRatings++;
+                genre.sumOfRatings += rating;
+                genre.avgRating = genre.sumOfRatings / genre.totalNumberOfRatings;
+
+                genre_ratings.avgRatingAggregate.totalNumberOfRatings++;
+                genre_ratings.avgRatingAggregate.sumOfRatings += genre.avgRating;
+                genre_ratings.avgRatingAggregate.avgRating = genre_ratings.avgRatingAggregate.sumOfRatings / genre_ratings.avgRatingAggregate.totalNumberOfRatings;
+            });
+
+            user.markModified('ratings');
+            user.markModified('genre_ratings');
+            await user.save();
+
+            return resolve({
+                movieId: movieId,
+                rating: rating,
+                genres: genres
+            });
         });
     }
 };
@@ -262,5 +260,43 @@ export const storeMovieVisit = async ({ id }, { movieId, time }) => {
                 }
             });
         });
+    }
+};
+
+const getEuclideanDistance = (activeUserRatings, otherUserRatings) => {
+    const n = activeUserRatings.length;
+    let coefficient = 0;
+
+    if (n === 0 || otherUserRatings.length === 0) {
+        return n;
+    }
+
+    for (let i = 0; i < n; i++) {
+        coefficient += Math.pow(activeUserRatings[i].rating - otherUserRatings[i].rating, 2);
+    }
+
+    return 1 / (1 + Math.sqrt(coefficient));
+};
+
+const getUsersRatingsIntersection = async (userId) => {
+    const activeUser = await User.findOne({ id: Number(userId) });
+    let activeUserRatings = activeUser.ratings.sort(sortByField('movieId'));
+    const activeUserRatingsIds = activeUserRatings.map((rating) => rating.movieId);
+
+    const otherUsers = await User.find({ 'ratings.movieId': { $in: activeUserRatingsIds }, id: { $ne: userId } });
+    const otherUsersRatings = otherUsers.map((user) => ({
+            id: user.id,
+            ratings: user.ratings
+                .map((rating) => {
+                    if (!activeUserRatingsIds.includes(rating.movieId)) { return; }
+                    return rating;
+                })
+                .filter((rating) => !!rating)
+                .sort(sortByField('movieId'))
+    }));
+
+    return {
+        activeUserRatings,
+        otherUsersRatings
     }
 };

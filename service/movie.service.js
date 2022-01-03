@@ -47,7 +47,7 @@ export const getPopularMovies = async ({ page, limit, genre, status }) => {
     };
 };
 
-export const getRecommendedMovies = async ({ page, limit, genre, status }) => {
+export const getRecommendedMovies = async (id, { page, limit, genre, status }) => {
     const query = addFilterQuery(genre, status);
 
     const movies = await buildAggregation(query, { popularity: -1, title: 1 }, limit, page);
@@ -164,4 +164,3 @@ const buildAggregation = async (query, sort, limit, page) => {
 
      return movies;
 };
-

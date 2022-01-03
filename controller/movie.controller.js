@@ -49,7 +49,7 @@ const getStatuses = (req, res, next) => {
 };
 
 const getRecommendedMovies = (req, res, next) => {
-    MovieService.getRecommendedMovies(req.query)
+    MovieService.getRecommendedMovies(res.locals.user.id, req.query)
         .then((movies) => {
             res
                 .status(200)
