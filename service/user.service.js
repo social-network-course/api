@@ -185,6 +185,17 @@ export const storeMovieRating = async ({ id }, body) => {
 
             genres.forEach((genreId) => {
                 const genre = genre_ratings.ratings.find((genre) => genre.genreId === genreId);
+
+                if (userRating && genre.totalNumberOfRatings > 1) {
+                    genre.totalNumberOfRatings--;
+                    genre.sumOfRatings -= userRating.rating;
+                    genre.avgRating = genre.sumOfRatings / genre.totalNumberOfRatings;
+                } else if (userRating && genre.totalNumberOfRatings === 1) {
+                    genre.totalNumberOfRatings = 0;
+                    genre.sumOfRatings = 0;
+                    genre.avgRating = 0;
+                }
+
                 genre.totalNumberOfRatings++;
                 genre.sumOfRatings += rating;
                 genre.avgRating = genre.sumOfRatings / genre.totalNumberOfRatings;
