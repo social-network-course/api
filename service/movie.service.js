@@ -9,6 +9,8 @@ import {
     fetchMovieDetails,
     fetchPersonDetails
 } from "../client/movie.client.js";
+import { sortByField } from "../util/general.js";
+import { RECOMMENDER_NO_OF_LOOKUP_USERS, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS } from "../util/constants.js";
 
 export const getGenres = async () => {
     const genres = await Genre
@@ -51,17 +53,30 @@ export const getPopularMovies = async ({ page, limit, genre, status }) => {
 export const getRecommendedMovies = async (id, { page, limit = 22, genre, status }) => {
     const user = await User.findOne({ id: id });
     const otherUsers = await User.find({ id: { $ne: id } });
-    let pearsonCoefficients = new Map();
+    let pearsonCoefficients = [];
 
     const normalizedActiveUserRatings = normalizeUserRatings(user.genre_ratings.ratings, user.genre_ratings.avgRatingAggregate.avgRating);
 
     otherUsers.forEach((otherUser) => {
         const normalizedOtherUserRatings = normalizeUserRatings(otherUser.genre_ratings.ratings, otherUser.genre_ratings.avgRatingAggregate.avgRating)
         const pearsonCorrelation = getPearsonCorrelation(normalizedActiveUserRatings, normalizedOtherUserRatings);
-        pearsonCoefficients.set(otherUser.id, pearsonCorrelation);
+        pearsonCoefficients.push({ [otherUser.id]: pearsonCorrelation });
     });
 
-    console.log(pearsonCoefficients)
+    pearsonCoefficients.sort(sortByField('pearsonCorrelation'));
+    const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS + 1);
+
+    let movies = [];
+    for (let i = 0; i < topLookupUsers.length; i++) {
+        const user = otherUsers.find((user) => user.id === Number(Object.keys(topLookupUsers[i])[0]));
+        const topLookupUsersRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS + 1);
+        for (const rating of topLookupUsersRatings) {
+            const movie = await Movie.findOne({ id: rating.movieId });
+            if (movie) {
+                movies.push(movie);
+            }
+        }
+    }
 
     return {
         movies: movies,

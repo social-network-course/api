@@ -182,6 +182,7 @@ export const storeMovieRating = async ({ id }, body) => {
                     genres: genres
                 });
             }
+            ratings.sort(sortByField('rating')).reverse();
 
             genres.forEach((genreId) => {
                 const genre = genre_ratings.ratings.find((genre) => genre.genreId === genreId);
@@ -279,43 +280,5 @@ export const storeMovieVisit = async ({ id }, { movieId, time }) => {
                 }
             });
         });
-    }
-};
-
-const getEuclideanDistance = (activeUserRatings, otherUserRatings) => {
-    const n = activeUserRatings.length;
-    let coefficient = 0;
-
-    if (n === 0 || otherUserRatings.length === 0) {
-        return n;
-    }
-
-    for (let i = 0; i < n; i++) {
-        coefficient += Math.pow(activeUserRatings[i].rating - otherUserRatings[i].rating, 2);
-    }
-
-    return 1 / (1 + Math.sqrt(coefficient));
-};
-
-const getUsersRatingsIntersection = async (userId) => {
-    const activeUser = await User.findOne({ id: Number(userId) });
-    let activeUserRatings = activeUser.ratings.sort(sortByField('movieId'));
-    const activeUserRatingsIds = activeUserRatings.map((rating) => rating.movieId);
-
-    const otherUsers = await User.find({ 'ratings.movieId': { $in: activeUserRatingsIds }, id: { $ne: userId } });
-    const otherUsersRatings = otherUsers.map((user) => ({
-            id: user.id,
-            ratings: user.ratings
-                .map((rating) => {
-                    if (!activeUserRatingsIds.includes(rating.movieId)) { return; }
-                    return rating;
-                })
-                .filter((rating) => !!rating)
-                .sort(sortByField('movieId'))
-    }));
-
-    return {
-        activeUserRatings,
-        otherUsersRatings
     }
 };
