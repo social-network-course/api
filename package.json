@@ -17,12 +17,12 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "geoip-lite": "^1.4.2",
-    "google-profanity-words": "^1.0.0",
     "moment": "^2.29.1",
     "mongodb": "^4.1.2",
     "mongoose": "^6.0.9",
     "node-fetch": "^3.0.0",
     "prerender-node": "^3.4.0",
+    "profane-words": "^1.4.0",
     "request-ip": "^2.1.3",
     "uniqid": "^5.4.0",
     "winston": "^3.3.3"
