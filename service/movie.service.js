@@ -51,29 +51,35 @@ export const getPopularMovies = async ({ page, limit, genre, status }) => {
 };
 
 export const getRecommendedMovies = async (id, { page, limit = 22, genre, status }) => {
-    const user = await User.findOne({ id: id });
+    const activeUser = await User.findOne({ id: id });
     const otherUsers = await User.find({ id: { $ne: id } });
+
     let pearsonCoefficients = [];
 
-    const normalizedActiveUserRatings = normalizeUserRatings(user.genre_ratings.ratings, user.genre_ratings.avgRatingAggregate.avgRating);
+    const normalizedActiveUserRatings = normalizeUserRatings(activeUser.genre_ratings.ratings, activeUser.genre_ratings.avgRatingAggregate.avgRating);
 
     otherUsers.forEach((otherUser) => {
         const normalizedOtherUserRatings = normalizeUserRatings(otherUser.genre_ratings.ratings, otherUser.genre_ratings.avgRatingAggregate.avgRating)
         const pearsonCorrelation = getPearsonCorrelation(normalizedActiveUserRatings, normalizedOtherUserRatings);
-        pearsonCoefficients.push({ [otherUser.id]: pearsonCorrelation });
+        pearsonCoefficients.push({
+            userId: otherUser.id,
+            similarity: pearsonCorrelation
+        });
     });
 
-    pearsonCoefficients.sort(sortByField('pearsonCorrelation'));
+    pearsonCoefficients.sort(sortByField('similarity')).reverse();
     const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS + 1);
 
     let movies = [];
-    for (let i = 0; i < topLookupUsers.length; i++) {
-        const user = otherUsers.find((user) => user.id === Number(Object.keys(topLookupUsers[i])[0]));
-        const topLookupUsersRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS + 1);
-        for (const rating of topLookupUsersRatings) {
-            const movie = await Movie.findOne({ id: rating.movieId });
-            if (movie) {
-                movies.push(movie);
+    for (const topLookupUser of topLookupUsers) {
+        const user = otherUsers.find((user) => user.id === Number(topLookupUser.userId));
+        const topLookupUserRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS);
+        for (const rating of topLookupUserRatings) {
+            if (!activeUser.ratings.find((activeUserRating) => activeUserRating.rating === rating.movieId)) {
+                const movie = await Movie.findOne({ id: rating.movieId });
+                if (movie && !movies.find((recommendedMovie) => recommendedMovie.id === movie.id)) {
+                    movies.push(movie);
+                }
             }
         }
     }
@@ -193,11 +199,11 @@ const buildAggregation = async (query, sort, limit, page) => {
 
 const normalizeUserRatings = (userGenreRatings, userAvgRatingAggregate) => {
     const normalizedUserRatings = userGenreRatings.map((rating) => {
-        if (rating.totalNumberOfRatings > 0) {
-            return rating.avgRating - userAvgRatingAggregate;
-        } else {
+        if (rating.totalNumberOfRatings === 0) {
             return null;
         }
+
+        return rating.avgRating - userAvgRatingAggregate;
     });
 
     return normalizedUserRatings;
