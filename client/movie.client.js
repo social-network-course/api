@@ -188,3 +188,19 @@ export const fetchPersonDetails = async (id) => {
         console.error(err);
     }
 };
+
+export const fetchPopularShows = async () => {
+    const episodateUrl = process.env.EPISODATE_API;
+
+    try {
+        const response = await fetch(appendApiKey(`${episodateUrl}/most-popular?page=1`), {
+                method: 'GET',
+                headers: defaultHeaders
+            }
+        );
+
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
+};

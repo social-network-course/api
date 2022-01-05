@@ -7,6 +7,7 @@ import prerender from 'prerender-node';
 
 import userRouter from './controller/user.controller.js';
 import movieRouter from "./controller/movie.controller.js";
+import showRouter from "./controller/show.controller.js";
 import deletionRouter from "./controller/deletion.controller.js";
 import connectToDb from './_helpers/db.config.js';
 import { fetchGenres, fetchMovies } from "./client/movie.client.js";
@@ -26,6 +27,7 @@ app.use(prerender);
 // api routes
 app.use('/users', authMiddleware, userRouter);
 app.use('/movies', movieRouter);
+app.use('/shows', showRouter);
 app.use('/deletion', deletionRouter);
 
 await connectToDb();
