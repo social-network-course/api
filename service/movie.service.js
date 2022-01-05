@@ -54,40 +54,50 @@ export const getRecommendedMovies = async (id, { page, limit = 22, genre, status
     const activeUser = await User.findOne({ id: id });
     const otherUsers = await User.find({ id: { $ne: id } });
 
-    let pearsonCoefficients = [];
+    if (activeUser.ratings.length > 0) {
+        let pearsonCoefficients = [];
 
-    const normalizedActiveUserRatings = normalizeUserRatings(activeUser.genre_ratings.ratings, activeUser.genre_ratings.avgRatingAggregate.avgRating);
+        const normalizedActiveUserRatings = normalizeUserRatings(activeUser.genre_ratings.ratings, activeUser.genre_ratings.avgRatingAggregate.avgRating);
 
-    otherUsers.forEach((otherUser) => {
-        const normalizedOtherUserRatings = normalizeUserRatings(otherUser.genre_ratings.ratings, otherUser.genre_ratings.avgRatingAggregate.avgRating)
-        const pearsonCorrelation = getPearsonCorrelation(normalizedActiveUserRatings, normalizedOtherUserRatings);
-        pearsonCoefficients.push({
-            userId: otherUser.id,
-            similarity: pearsonCorrelation
+        otherUsers.forEach((otherUser) => {
+            if (otherUser.ratings.length > 0) {
+                const normalizedOtherUserRatings = normalizeUserRatings(otherUser.genre_ratings.ratings, otherUser.genre_ratings.avgRatingAggregate.avgRating)
+                const pearsonCorrelation = getPearsonCorrelation(normalizedActiveUserRatings, normalizedOtherUserRatings);
+                pearsonCoefficients.push({
+                    userId: otherUser.id,
+                    similarity: pearsonCorrelation
+                });
+            }
         });
-    });
 
-    pearsonCoefficients.sort(sortByField('similarity')).reverse();
-    const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS + 1);
+        pearsonCoefficients.sort(sortByField('similarity')).reverse();
+        console.log(pearsonCoefficients)
+        const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS + 1);
 
-    let movies = [];
-    for (const topLookupUser of topLookupUsers) {
-        const user = otherUsers.find((user) => user.id === Number(topLookupUser.userId));
-        const topLookupUserRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS);
-        for (const rating of topLookupUserRatings) {
-            if (!activeUser.ratings.find((activeUserRating) => activeUserRating.rating === rating.movieId)) {
-                const movie = await Movie.findOne({ id: rating.movieId });
-                if (movie && !movies.find((recommendedMovie) => recommendedMovie.id === movie.id)) {
-                    movies.push(movie);
+        let movies = [];
+        for (const topLookupUser of topLookupUsers) {
+            const user = otherUsers.find((user) => user.id === Number(topLookupUser.userId));
+            const topLookupUserRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS);
+            for (const rating of topLookupUserRatings) {
+                if (!activeUser.ratings.find((activeUserRating) => activeUserRating.rating === rating.movieId)) {
+                    const movie = await Movie.findOne({ id: rating.movieId });
+                    if (movie && !movies.find((recommendedMovie) => recommendedMovie.id === movie.id)) {
+                        movies.push(movie);
+                    }
                 }
             }
         }
-    }
 
-    return {
-        movies: movies,
-        pages: Math.ceil(movies.length / limit)
-    };
+        return {
+            movies: movies,
+            pages: Math.ceil(movies.length / limit)
+        };
+    } else {
+        return {
+            movies: null,
+            pages: null
+        }
+    }
 };
 
 export const getFeaturedMovies = async ({ limit }) => {
