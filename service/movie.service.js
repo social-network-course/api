@@ -71,16 +71,15 @@ export const getRecommendedMovies = async (id, { page, limit = 22, genre, status
         });
 
         pearsonCoefficients.sort(sortByField('similarity')).reverse();
-        console.log(pearsonCoefficients)
-        const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS + 1);
-
+        const topLookupUsers = pearsonCoefficients.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS);
         let movies = [];
         for (const topLookupUser of topLookupUsers) {
             const user = otherUsers.find((user) => user.id === Number(topLookupUser.userId));
             const topLookupUserRatings = user.ratings.slice(0, RECOMMENDER_NO_OF_LOOKUP_USERS_RATINGS);
             for (const rating of topLookupUserRatings) {
-                if (!activeUser.ratings.find((activeUserRating) => activeUserRating.rating === rating.movieId)) {
+                if (!activeUser.ratings.find((activeUserRating) => activeUserRating.movieId === rating.movieId)) {
                     const movie = await Movie.findOne({ id: rating.movieId });
+                    // movie check because movie can be from region list, which is not queried from db
                     if (movie && !movies.find((recommendedMovie) => recommendedMovie.id === movie.id)) {
                         movies.push(movie);
                     }
@@ -225,7 +224,7 @@ const getPearsonCorrelation = (normalizedActiveUserRatings, normalizedOtherUserR
     let pearsonDenominatorOtherUser = 0;
 
     for (let i = 0; i < normalizedActiveUserRatings.length; i++) {
-        if (!normalizedActiveUserRatings[i] || !normalizedOtherUserRatings[i]) {
+        if (normalizedActiveUserRatings[i] === null || normalizedOtherUserRatings[i] === null) {
             continue;
         } else {
             pearsonNumerator += normalizedActiveUserRatings[i] * normalizedOtherUserRatings[i];
