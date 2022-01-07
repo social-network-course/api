@@ -170,6 +170,12 @@ export const getPersonDetails = async ({ id }) => {
     return details;
 };
 
+export const searchMovies = async ({ entry }) => {
+    const movies = await Movie.find({title: { $regex: entry, $options: 'i' }}, 'id title poster_path');
+
+    return movies;
+};
+
 const addFilterQuery = (genre, status) => {
     const genreFilters = genre.split(',');
     const statusFilters = status.split(',');

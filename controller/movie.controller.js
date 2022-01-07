@@ -258,6 +258,27 @@ const getPersonDetails = (req, res, next) => {
         });
 };
 
+const searchMovies = (req, res, next) => {
+    MovieService.searchMovies(req.query)
+        .then((movies) => {
+            res
+                .status(200)
+                .send(movies);
+        })
+        .catch(err => {
+            logger.log({
+                level: 'error',
+                message: err
+            });
+            res
+                .status(500)
+                .send({
+                    message: 'Error while fetching person details.',
+                    hasErrors: true
+                });
+        });
+};
+
 // routes
 movieRouter.get('/genres', getGenres);
 movieRouter.get('/statuses', getStatuses);
@@ -271,5 +292,6 @@ movieRouter.get('/top-revenue', getTopRevenueMovies);
 movieRouter.get('/most-visited', getMostVisitedMovies);
 movieRouter.get('/:id/details', getMovieDetails);
 movieRouter.get('/people/:id/details', getPersonDetails);
+movieRouter.get('/search', searchMovies);
 
 export default movieRouter;

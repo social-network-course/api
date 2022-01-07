@@ -20,7 +20,7 @@ const getPopularShows = (req, res, next) => {
             res
                 .status(500)
                 .send({
-                    message: 'Error while deleting user.',
+                    message: 'Error while fetching popular shows.',
                     hasErrors: true
                 })
         });
