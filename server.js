@@ -19,7 +19,7 @@ dotenv.config();
 const app = express();
 
 // middleware
-app.use(cors({ origin: process.env.WEBUI_URL } ));
+app.use(cors({ origin: process.env.WEBUI_URL, credentials: true } ));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(prerender);
